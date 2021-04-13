@@ -1,32 +1,32 @@
 package mbe.common;
 
 /**
- * @Description: 
+ * @Description: data structure for edge in bipartite graph
+ *
  * @ClassName: Edge
  * @author: Jiri Yu
  * @date: 2021/4/4 
  */
-public class Edge {
-    private static long countEdge = 0L;
-    private final long X;
-    private final long Y;
+public class Edge<T> {
+    private final Vertex<T> X;
+    private final Vertex<T> Y;
 
-    public Edge(long X, long Y){
+    public Edge(T X, T Y){
+        this.X = new Vertex<>(X);
+        this.Y = new Vertex<>(Y);
+    }
+
+    public Edge(Vertex<T> X, Vertex<T> Y){
         this.X = X;
         this.Y = Y;
     }
 
-    public long getX() {
+    public Vertex<T> getX() {
         return X;
     }
 
-    public long getY() {
+    public Vertex<T> getY() {
         return Y;
-    }
-
-    public long getCountEdge(){
-        this.countEdge += 1;
-        return this.countEdge;
     }
 
     @Override
@@ -46,5 +46,8 @@ public class Edge {
         return false;
     }
 
-
+    @Override
+    public int hashCode(){
+        return this.toString().hashCode();
+    }
 }
