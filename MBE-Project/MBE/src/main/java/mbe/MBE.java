@@ -18,7 +18,6 @@
 
 package mbe;
 
-import mbe.common.Edge;
 import mbe.source.BipartiteGraphSourceFunctionRandom;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.DataStream;

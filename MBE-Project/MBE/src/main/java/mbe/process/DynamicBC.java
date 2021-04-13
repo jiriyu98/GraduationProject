@@ -1,8 +1,6 @@
 package mbe.process;
 
-import mbe.common.Edge;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
-import org.apache.flink.table.data.RowData;
 import org.apache.flink.util.Collector;
 import org.apache.flink.walkthrough.common.entity.Alert;
 
