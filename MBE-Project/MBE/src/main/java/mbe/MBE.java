@@ -49,7 +49,7 @@ public class MBE {
 //
 //		env.execute("Dynamic BC");
 
-		DataStream<Edge<Long>> source = env
+		DataStream<Edge> source = env
 				.addSource(new BipartiteGraphSourceFunctionRandom(1000, 1000))
 				.name("new edges added : (v, v)");
 

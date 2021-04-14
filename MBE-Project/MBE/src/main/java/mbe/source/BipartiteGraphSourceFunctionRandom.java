@@ -13,10 +13,10 @@ import java.util.HashSet;
  * @author: Jiri Yu
  * @date: 2021/4/2 
  */
-public class BipartiteGraphSourceFunctionRandom extends RichSourceFunction<Edge<Long>> implements ResultTypeQueryable<Edge<Long>> {
+public class BipartiteGraphSourceFunctionRandom extends RichSourceFunction<Edge> implements ResultTypeQueryable<Edge> {
     private final long verticesNumX;
     private final long verticesNumY;
-    private HashSet<Edge<Long>> edges;
+    private HashSet<Edge> edges;
 
     private volatile boolean isRunning = true;
 
@@ -32,22 +32,22 @@ public class BipartiteGraphSourceFunctionRandom extends RichSourceFunction<Edge<
     }
 
     @Override
-    public TypeInformation<Edge<Long>> getProducedType() {
+    public TypeInformation<Edge> getProducedType() {
         return null;
     }
 
     @Override
-    public void run(SourceContext<Edge<Long>> sourceContext) throws Exception {
+    public void run(SourceContext<Edge> sourceContext) throws Exception {
         while (isRunning) {
             long VX, VY;
-            Edge<Long> edge;
+            Edge edge;
             do {
                 VX = CalculateNum(verticesNumX);
                 VY = CalculateNum(verticesNumY);
-                edge = new Edge<>(VX, VY);
+                edge = new Edge(VX, VY);
             } while (edges.contains(edge));
             edges.add(edge);
-            sourceContext.collect(new Edge<>(VX, VY));
+            sourceContext.collect(new Edge(VX, VY));
             Thread.sleep(1000);
         }
     }

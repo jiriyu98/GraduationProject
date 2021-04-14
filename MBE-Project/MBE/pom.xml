@@ -36,6 +36,7 @@ under the License.
 		<maven.compiler.source>${target.java.version}</maven.compiler.source>
 		<maven.compiler.target>${target.java.version}</maven.compiler.target>
 		<log4j.version>2.12.1</log4j.version>
+		<JGraphT.version>1.5.0</JGraphT.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -76,11 +77,20 @@ under the License.
 			<version>${flink.version}</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<!--Flink Gelly for Graph-->
+<!--		<dependency>-->
+<!--			<groupId>org.apache.flink</groupId>-->
+<!--			<artifactId>flink-gelly_${scala.binary.version}</artifactId>-->
+<!--			<version>${flink.version}</version>-->
+<!--			<scope>provided</scope>-->
+<!--		</dependency>-->
+
+		<!--JGraphT for Graph-->
 		<dependency>
-			<groupId>org.apache.flink</groupId>
-			<artifactId>flink-gelly_${scala.binary.version}</artifactId>
-			<version>${flink.version}</version>
-			<scope>provided</scope>
+			<groupId>org.jgrapht</groupId>
+			<artifactId>jgrapht-core</artifactId>
+			<version>${JGraphT.version}</version>
 		</dependency>
 		<!--jar for local flink environment-->
 		<!-- Add connector dependencies here. They must be in the default scope (compile). -->

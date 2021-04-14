@@ -7,25 +7,25 @@ package mbe.common;
  * @author: Jiri Yu
  * @date: 2021/4/4 
  */
-public class Edge<T> {
-    private final Vertex<T> X;
-    private final Vertex<T> Y;
+public class Edge {
+    private final Vertex X;
+    private final Vertex Y;
 
-    public Edge(T X, T Y){
-        this.X = new Vertex<>(X);
-        this.Y = new Vertex<>(Y);
+    public Edge(Long X, Long Y){
+        this.X = new Vertex(X);
+        this.Y = new Vertex(Y);
     }
 
-    public Edge(Vertex<T> X, Vertex<T> Y){
+    public Edge(Vertex X, Vertex Y){
         this.X = X;
         this.Y = Y;
     }
 
-    public Vertex<T> getX() {
+    public Vertex getX() {
         return X;
     }
 
-    public Vertex<T> getY() {
+    public Vertex getY() {
         return Y;
     }
 
