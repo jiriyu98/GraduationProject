@@ -1,9 +1,9 @@
 package mbe.algorithm;
 
 /**
- * @Description:
+ * @description:
  *
- * @ClassName: SubBC
+ * @className: SubBC
  * @author: Jiri Yu
  * @date: 2021/4/11 
  */

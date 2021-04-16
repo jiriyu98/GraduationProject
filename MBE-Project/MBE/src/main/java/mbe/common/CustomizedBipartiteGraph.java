@@ -10,43 +10,75 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * @Description: data structure for bipartite graph.
+ * @description: data structure for bipartite graph.
  * BipartiteGraph has been used by Flink Gelly, in case I include this library.
  * seq: [1, 2, 3, ..., verticesNum*], *V* means type of Vertex id
  *
- * @ClassName: CustomizedBipartiteGraph
+ * @className: CustomizedBipartiteGraph
  * @author: Jiri Yu
  * @date: 2021/4/10 
  */
 public class CustomizedBipartiteGraph {
-    private final long XVerticesNum;
-    private final long YVerticesNum;
+    private final long numVerticesL;
+    private final long numVerticesR;
 
     private Graph<Vertex, Edge> graph;
 
-    public CustomizedBipartiteGraph(long xVerticesNum,
-                                    long yVerticesNum){
-        XVerticesNum = xVerticesNum;
-        YVerticesNum = yVerticesNum;
+    public CustomizedBipartiteGraph(long numVerticesL,
+                                    long numVerticesR){
+        this.numVerticesL = numVerticesL;
+        this.numVerticesR = numVerticesR;
         graph = new SimpleGraph<>(Edge.class);
     }
 
-    public long getXVerticesNum() {
-        return XVerticesNum;
+    public long getNumVerticesL() {
+        return numVerticesL;
     }
 
-    public long getYVerticesNum() {
-        return YVerticesNum;
+    public long getNumVerticesR() {
+        return numVerticesR;
     }
 
-    public Edge insertEdge(Vertex v1, Vertex v2){
-        graph.addVertex(v1);
-        graph.addVertex(v2);
-        return graph.addEdge(v1, v2);
+    public boolean insertVertex(Vertex vertex){
+        return graph.addVertex(vertex);
     }
 
     /*
-     * @Description: utils function, for get a vertex's adjacent vertices. It is useful in MineLMBC algorithm.
+     * @description: I recommend to use insertVertex instead of insertAllVertices.
+     *
+     * @param vertices
+     * @return void
+     * @author Jiri Yu
+     */
+    @Deprecated
+    public void insertAllVertices(Vertex[] vertices){
+        for (int i = 0; i < vertices.length; i++) {
+            graph.addVertex(vertices[i]);
+        }
+    }
+
+    public boolean insertEdge(Edge edge){
+        graph.addVertex(edge.getX());
+        graph.addVertex(edge.getY());
+        return graph.addEdge(edge.getX(), edge.getY(), edge);
+    }
+
+    /*
+     * @description: I recommend to use insertEdge instead of insertAllEdges.
+     *
+     * @param edges
+     * @return void
+     * @author Jiri Yu
+     */
+    @Deprecated
+    public void insertAllEdges(Edge[] edges){
+        for (int i = 0; i < edges.length; i++) {
+            insertEdge(edges[i]);
+        }
+    }
+
+    /*
+     * @description: utils function, for get a vertex's adjacent vertices. It is useful in MineLMBC algorithm.
      *
      * @param v
      * @return java.util.Set<mbe.common.Vertex<V>>
@@ -57,7 +89,7 @@ public class CustomizedBipartiteGraph {
     }
 
     /*
-     * @Description: utils function, for get vertices' adjacent vertices. It is useful in MineLMBC algorithm.
+     * @description: utils function, for get vertices' adjacent vertices. It is useful in MineLMBC algorithm.
      *
      * @param v	
      * @return java.util.Set<mbe.common.Vertex>
@@ -75,7 +107,7 @@ public class CustomizedBipartiteGraph {
     }
 
     /*
-     * @Description: this function for gammaX Union V, for quick use in MineLMBC.
+     * @description: this function for gammaX Union V, for quick use in MineLMBC.
      *
      * @param gammaX, adjacent vertices of vertices set X.
      * @param v, vertex
@@ -103,5 +135,12 @@ public class CustomizedBipartiteGraph {
             }
         }
         return adjacentVertices;
+    }
+
+    @Override
+    public String toString(){
+        // Most of the time graph.toString() is confusing.
+        // I draw a graph that will be more clear.
+        return graph.toString();
     }
 }

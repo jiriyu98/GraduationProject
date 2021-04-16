@@ -1,26 +1,34 @@
 package mbe.algorithm;
 
+import mbe.common.Biclique;
 import mbe.common.CustomizedBipartiteGraph;
+import mbe.common.Partition;
 import mbe.common.Vertex;
 
 import java.util.*;
 
 /**
- * @Description: basic algorithm for static graph
+ * @description: basic algorithm for static graph
  *
- * @ClassName: MineLMBC
+ * @className: MineLMBC
  * @author: Jiri Yu
  * @date: 2021/4/12 
  */
 public class MineLMBC<T> {
     private final CustomizedBipartiteGraph customizedBipartiteGraph;
 
+    private Set<Biclique> maximalBicliques;
+
     public MineLMBC(CustomizedBipartiteGraph customizedBipartiteGraph) {
         this.customizedBipartiteGraph = customizedBipartiteGraph;
     }
 
+    public Set<Biclique> getBicliques() {
+        return maximalBicliques;
+    }
+
     /*
-     * @Description: mineLMBC, an algorithm for static bipartite graph.
+     * @description: mineLMBC, an algorithm for static bipartite graph.
      *
      * @param X, is a vertex set
      * @param gammaX, is the adjacency list of X
@@ -90,14 +98,20 @@ public class MineLMBC<T> {
                 if(tailX.containsAll(Y)){
                     // Line 12
                     if(Y.size() >= ms){
-                        // TODO(Jiri Yu): Line 13
-                        // Line 13
+                        // TODO(Jiri Yu): Can I find a new method to avoid state L or R set explicitly.
+                        // Line 13, biclique we define distinguishes Left Set adn Right Set.
+                        // So we have to distinguish them before construct a new biclique.
+                        if(Y.iterator().next().getPartition().equals(Partition.LEFT)){
+                            maximalBicliques.add(new Biclique(Y, gammaXUnionVertex));
+                        }else{
+                            maximalBicliques.add(new Biclique(gammaXUnionVertex, Y));
+                        }
                     }
                     tailX.removeAll(Y);
                     mineLMBC(Y, gammaXUnionVertex, tailX, ms);
                 }
                 // these can be deleted.
-                Y.addAll(X);
+//                Y.addAll(X);
                 X.remove(vertex);
             }
         }

@@ -4,40 +4,40 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * @Description: data structure for biclique in bipartite graph
+ * @description: data structure for biclique in bipartite graph
  *
- * @ClassName: Biclique
+ * @className: Biclique
  * @author: Jiri Yu
  * @date: 2021/4/9
  */
 public class Biclique<T> {
-    private Set<T> X;
-    private Set<T> Y;
+    private Set<T> leftSet;
+    private Set<T> rightSet;
 
     public Biclique(){
-        X = new TreeSet<>();
-        Y = new TreeSet<>();
+        leftSet = new TreeSet<>();
+        rightSet = new TreeSet<>();
     }
 
-    public Biclique(Set<T> X, Set<T> Y){
-        X = new TreeSet<>();
-        Y = new TreeSet<>();
+    public Biclique(Set<T> leftSet, Set<T> rightSet){
+        this.leftSet = new TreeSet<>();
+        this.rightSet = new TreeSet<>();
 
-        this.X.addAll(X);
-        this.Y.addAll(Y);
+        this.leftSet.addAll(leftSet);
+        this.rightSet.addAll(rightSet);
     }
 
-    public Set<T> getX() {
-        return X;
+    public Set<T> getLeftSet() {
+        return this.leftSet;
     }
 
-    public Set<T> getY() {
-        return Y;
+    public Set<T> getRightSet() {
+        return this.rightSet;
     }
 
     @Override
     public String toString(){
-        return "<" + X + "," + Y + ">";
+        return "<" + this.leftSet + "," + this.rightSet + ">";
     }
 
     @Override
@@ -47,7 +47,7 @@ public class Biclique<T> {
         }
 
         Biclique biclique = (Biclique)o;
-        return X == biclique.X && Y == biclique.Y;
+        return this.leftSet == biclique.leftSet && this.rightSet == biclique.rightSet;
     }
 
     @Override

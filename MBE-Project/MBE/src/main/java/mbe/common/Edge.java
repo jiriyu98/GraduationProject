@@ -1,9 +1,9 @@
 package mbe.common;
 
 /**
- * @Description: data structure for edge in bipartite graph
+ * @description: data structure for edge in bipartite graph
  *
- * @ClassName: Edge
+ * @className: Edge
  * @author: Jiri Yu
  * @date: 2021/4/4 
  */
@@ -31,7 +31,7 @@ public class Edge {
 
     @Override
     public String toString(){
-        return X + " - " + Y;
+        return "<" + X + " - " + Y + ">";
     }
 
     @Override
