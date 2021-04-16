@@ -32,6 +32,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 public class MBE {
 	public static void main(String[] args) throws Exception {
 		// localhost:8081
+		// it needs local environment, that is why we include flink-dist.
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
 
 //		DataStream<Transaction> transactions = env

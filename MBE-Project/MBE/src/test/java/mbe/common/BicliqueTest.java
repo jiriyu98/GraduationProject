@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 public class BicliqueTest {
     @Test
     public void createBiclique(){
-        Biclique<Vertex> biclique;
+        Biclique biclique;
         Set<Vertex> vertexLeftSet = new TreeSet<>();
         Set<Vertex> vertexRightSet = new TreeSet<>();
         int lenLeft = 10;

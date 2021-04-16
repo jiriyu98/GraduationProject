@@ -22,7 +22,7 @@ public class VertexTest {
             assertEquals(vertex, vertices.get(i));
             if(i>=1){
                 assertNotNull(vertices.get(i-1));
-                System.out.println(vertices.get(i).compareTo(vertices.get(i-1)));
+                assertEquals(vertices.get(i).compareTo(vertices.get(i-1)), 0);
             }
         }
     }

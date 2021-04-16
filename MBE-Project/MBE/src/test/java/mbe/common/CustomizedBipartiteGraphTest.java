@@ -36,14 +36,14 @@ public class CustomizedBipartiteGraphTest {
     }
 
     /*
-     * @description: Test if
+     * @description: Test
      *
      * @param
      * @return void
      * @author Jiri Yu
      */
     @Test
-    public void test1(){
+    public void testInsertEdge(){
         System.out.println(graph);
     }
 

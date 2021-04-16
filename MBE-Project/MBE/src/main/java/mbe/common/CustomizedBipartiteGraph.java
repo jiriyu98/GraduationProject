@@ -140,7 +140,7 @@ public class CustomizedBipartiteGraph {
     @Override
     public String toString(){
         // Most of the time graph.toString() is confusing.
-        // I draw a graph that will be more clear.
+        // I shall draw a graph that will be more clear.
         return graph.toString();
     }
 }

@@ -10,16 +10,16 @@ import java.util.TreeSet;
  * @author: Jiri Yu
  * @date: 2021/4/9
  */
-public class Biclique<T> {
-    private Set<T> leftSet;
-    private Set<T> rightSet;
+public class Biclique {
+    private Set<Vertex> leftSet;
+    private Set<Vertex> rightSet;
 
     public Biclique(){
         leftSet = new TreeSet<>();
         rightSet = new TreeSet<>();
     }
 
-    public Biclique(Set<T> leftSet, Set<T> rightSet){
+    public Biclique(Set<Vertex> leftSet, Set<Vertex> rightSet){
         this.leftSet = new TreeSet<>();
         this.rightSet = new TreeSet<>();
 
@@ -27,11 +27,11 @@ public class Biclique<T> {
         this.rightSet.addAll(rightSet);
     }
 
-    public Set<T> getLeftSet() {
+    public Set<Vertex> getLeftSet() {
         return this.leftSet;
     }
 
-    public Set<T> getRightSet() {
+    public Set<Vertex> getRightSet() {
         return this.rightSet;
     }
 
