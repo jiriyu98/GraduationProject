@@ -22,7 +22,7 @@ public class VertexTest {
             assertEquals(vertex, vertices.get(i));
             if(i>=1){
                 assertNotNull(vertices.get(i-1));
-                assertEquals(vertices.get(i).compareTo(vertices.get(i-1)), 0);
+                assertEquals(0, vertices.get(i).compareTo(vertices.get(i-1)));
             }
         }
     }
@@ -37,7 +37,7 @@ public class VertexTest {
         Arrays.sort(vertices);
         Arrays.sort(strings);
         for (int i = 0; i < strings.length; i++) {
-            assertEquals(vertices[i].getValue(), strings[i]);
+            assertEquals(strings[i], vertices[i].getValue());
         }
     }
 }

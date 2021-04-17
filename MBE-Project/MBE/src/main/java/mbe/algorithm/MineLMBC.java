@@ -14,7 +14,7 @@ import java.util.*;
  * @author: Jiri Yu
  * @date: 2021/4/12 
  */
-public class MineLMBC<T> {
+public class MineLMBC {
     private final CustomizedBipartiteGraph customizedBipartiteGraph;
 
     private Set<Biclique> maximalBicliques;
