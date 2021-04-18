@@ -12,7 +12,7 @@ import java.util.*;
  *
  * @className: MineLMBC
  * @author: Jiri Yu
- * @date: 2021/4/12 
+ * @date: 2021/4/12
  */
 public class MineLMBC {
     private final CustomizedBipartiteGraph customizedBipartiteGraph;
@@ -21,6 +21,7 @@ public class MineLMBC {
 
     public MineLMBC(CustomizedBipartiteGraph customizedBipartiteGraph) {
         this.customizedBipartiteGraph = customizedBipartiteGraph;
+        this.maximalBicliques = new HashSet<>();
     }
 
     public Set<Biclique> getBicliques() {
@@ -37,82 +38,91 @@ public class MineLMBC {
      * @return void
      * @author Jiri Yu
      */
-    public void mineLMBC(Set<Vertex> X, Set<Vertex> gammaX, Set<Vertex> tailX, long ms){
+    public void mineLMBC(Set<Vertex> X, Set<Vertex> gammaX, Set<Vertex> tailX, long ms) {
         // *Line* means line number of the MineLMBC in paper.
 
-        // it is useful for following lines to store size of {X U v}.
+        // it is useful for following lines to store size of (X U {v}).
         HashMap<Vertex, Integer> sizeOfXUnionVertexHashMap = new HashMap<>();
 
         // Line 1-3
         Iterator<Vertex> iteratorTailX = tailX.iterator();
-        while(iteratorTailX.hasNext()){
+        while (iteratorTailX.hasNext()) {
             Vertex vertex = iteratorTailX.next();
-            // {X U v}
-            X.add(vertex);
-            // it may be confusing, but in this line X means {X U v} in paper.
-            int sizeOfXUnionVertex = customizedBipartiteGraph.getAdjacentVerticesAndIntersect(gammaX, vertex).size();
-            if(sizeOfXUnionVertex < ms){
-                tailX.remove(vertex);
-            }else{
+            int sizeOfXUnionVertex =
+                    customizedBipartiteGraph.getAdjacentVerticesAndIntersect(gammaX, vertex).size();
+            if (sizeOfXUnionVertex < ms) {
+                // tailX.remove(vertex);
+                iteratorTailX.remove();
+            } else {
                 // only this case should be calculated(i.e. put into hashmap to store)
                 sizeOfXUnionVertexHashMap.put(vertex, sizeOfXUnionVertex);
             }
-            // X
-            X.remove(vertex);
         }
 
         // Line 4-5
-        if(X.size() + tailX.size() < ms){
+        if (X.size() + tailX.size() < ms) {
             return;
         }
 
         // Line 6
+        // WARNING: TreeSet will replace the old element which is compared same to the new one.
+        // So, in this way, I just add a new judgment to ensure it will get the all vertices.
         Set<Vertex> ascendingOrderSet = new TreeSet<>(new Comparator<Vertex>() {
             @Override
-            public int compare(Vertex vertex1, Vertex vertex2) {
-                return sizeOfXUnionVertexHashMap.get(vertex1) - sizeOfXUnionVertexHashMap.get(vertex2);
+            public int compare(Vertex o1, Vertex o2) {
+                int size1 = sizeOfXUnionVertexHashMap.get(o1);
+                int size2 = sizeOfXUnionVertexHashMap.get(o2);
+                if (size1 == size2) {
+                    return o1.getId().compareTo(o2.getId());
+                } else {
+                    return size1 - size2;
+                }
             }
         });
         Iterator<Vertex> iteratorTailXNew = tailX.iterator();
-        while(iteratorTailXNew.hasNext()){
+        while (iteratorTailXNew.hasNext()) {
             Vertex vertex = iteratorTailXNew.next();
-            // TODO(Jiri Yu): whether it should be sorted by String property.
             ascendingOrderSet.add(vertex);
         }
+        assert (ascendingOrderSet.size() == tailX.size())
+                : "tailX.size():" + tailX.size() + ", ascendingOrderSet.size():" + ascendingOrderSet.size();
 
         // Line 7-14
         Iterator<Vertex> iteratorSortedTailXNew = ascendingOrderSet.iterator();
-        while(iteratorSortedTailXNew.hasNext()){
-            Vertex vertex = iteratorTailX.next();
-            tailX.remove(vertex);
+        while (iteratorSortedTailXNew.hasNext()) {
+            Vertex vertex = iteratorSortedTailXNew.next();
+            // tailX.remove(vertex);
+            iteratorSortedTailXNew.remove();
             // Line 9
-            if(X.size() + 1 + tailX.size() >= ms){
+            if (X.size() + 1 + tailX.size() >= ms) {
                 // Line 10
-                X.add(vertex);
-                // gamma({X U v})
-                Set<Vertex> gammaXUnionVertex = customizedBipartiteGraph.getAdjacentVerticesAndIntersect(gammaX, vertex);
-                // gamma(gamma({X U v})
+                // gamma(X U {v})
+                Set<Vertex> gammaXUnionVertex =
+                        customizedBipartiteGraph.getAdjacentVerticesAndIntersect(gammaX, vertex);
+                // gamma(gamma(X U {v})
                 Set<Vertex> Y = customizedBipartiteGraph.getAdjacentVertices(gammaXUnionVertex);
-                Y.removeAll(X);
+                // Y - (X U {v})
+                Set<Vertex> delY = new HashSet<>(Y);
+                delY.removeAll(X);
+                delY.remove(vertex);
                 // Line 11
-                if(tailX.containsAll(Y)){
+                if (tailX.containsAll(delY)) {
                     // Line 12
-                    if(Y.size() >= ms){
-                        // TODO(Jiri Yu): Can I find a new method to avoid state L or R set explicitly.
+                    if (Y.size() >= ms) {
                         // Line 13, biclique we define distinguishes Left Set adn Right Set.
                         // So we have to distinguish them before construct a new biclique.
-                        if(Y.iterator().next().getPartition().equals(Partition.LEFT)){
+                        // It's a trick in Biclique class's definition.
+                        if (Y.iterator().next().getPartition().equals(Partition.LEFT)) {
                             maximalBicliques.add(new Biclique(Y, gammaXUnionVertex));
-                        }else{
+                        } else {
                             maximalBicliques.add(new Biclique(gammaXUnionVertex, Y));
                         }
                     }
-                    tailX.removeAll(Y);
-                    mineLMBC(Y, gammaXUnionVertex, tailX, ms);
+                    // It's in the loop, so tailX will be used next time
+                    Set<Vertex> tailXNew = new HashSet<>(tailX);
+                    tailXNew.removeAll(Y);
+                    mineLMBC(Y, gammaXUnionVertex, tailXNew, ms);
                 }
-                // these can be deleted.
-//                Y.addAll(X);
-                X.remove(vertex);
             }
         }
     }

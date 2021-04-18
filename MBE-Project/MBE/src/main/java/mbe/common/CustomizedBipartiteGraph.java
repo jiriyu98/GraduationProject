@@ -11,10 +11,9 @@ import java.util.*;
  * BipartiteGraph has been used by Flink Gelly, in case I include this library.
  * Because vertex num is fixed, so I use a trick to indicate left vertices set and right vertices set.
  * seq: [1, 2, 3, ..., verticesNum*], V means type of Vertex id
- *
  * @className: CustomizedBipartiteGraph
  * @author: Jiri Yu
- * @date: 2021/4/10 
+ * @date: 2021/4/10
  */
 public class CustomizedBipartiteGraph {
     private final long numVerticesL;
@@ -26,7 +25,7 @@ public class CustomizedBipartiteGraph {
     private Graph<Vertex, Edge> graph;
 
     public CustomizedBipartiteGraph(long numVerticesL,
-                                    long numVerticesR){
+                                    long numVerticesR) {
         this.numVerticesL = numVerticesL;
         this.numVerticesR = numVerticesR;
         this.verticesL = new HashSet<>();
@@ -50,20 +49,20 @@ public class CustomizedBipartiteGraph {
         return verticesR;
     }
 
-    public boolean insertVertex(Vertex vertex){
-        if(vertex.getPartition() == Partition.LEFT){
+    public boolean insertVertex(Vertex vertex) {
+        if (vertex.getPartition() == Partition.LEFT) {
             verticesL.add(vertex);
-        }else {
+        } else {
             verticesR.add(vertex);
         }
         return graph.addVertex(vertex);
     }
 
-    public Set<Edge> getEdges(){
+    public Set<Edge> getEdges() {
         return graph.edgeSet();
     }
 
-    public Set<Vertex> getVertices(){
+    public Set<Vertex> getVertices() {
         return graph.vertexSet();
     }
 
@@ -75,7 +74,7 @@ public class CustomizedBipartiteGraph {
      * @author Jiri Yu
      */
     @Deprecated
-    public void insertAllVertices(Vertex[] vertices){
+    public void insertAllVertices(Vertex[] vertices) {
         for (int i = 0; i < vertices.length; i++) {
             insertVertex(vertices[i]);
         }
@@ -89,8 +88,8 @@ public class CustomizedBipartiteGraph {
      * @return boolean
      * @author Jiri Yu
      */
-    public boolean insertEdge(Edge edge){
-        if(graph.containsEdge(edge)){
+    public boolean insertEdge(Edge edge) {
+        if (graph.containsEdge(edge)) {
             return false;
         }
         return graph.addEdge(edge.getX(), edge.getY(), edge);
@@ -104,7 +103,7 @@ public class CustomizedBipartiteGraph {
      * @author Jiri Yu
      */
     @Deprecated
-    public void insertAllEdges(Edge[] edges){
+    public void insertAllEdges(Edge[] edges) {
         for (int i = 0; i < edges.length; i++) {
             insertEdge(edges[i]);
         }
@@ -117,7 +116,7 @@ public class CustomizedBipartiteGraph {
      * @return java.util.Set<mbe.common.Vertex<V>>
      * @author Jiri Yu
      */
-    public Set<Vertex> getAdjacentVertices(Vertex v){
+    public Set<Vertex> getAdjacentVertices(Vertex v) {
         return Graphs.neighborSetOf(graph, v);
     }
 
@@ -126,20 +125,20 @@ public class CustomizedBipartiteGraph {
      * Pay attention, gamma(X) returns vertices adjacent to all vertices in set X.
      * We can get gamma(X) == Intersect(gamma(x)), where x belongs to X.
      *
-     * @param v	
+     * @param v
      * @return java.util.Set<mbe.common.Vertex>
      * @author Jiri Yu
      */
-    public Set<Vertex> getAdjacentVertices(Set<Vertex> vertices){
+    public Set<Vertex> getAdjacentVertices(Set<Vertex> vertices) {
         Set<Vertex> adjacencies = new TreeSet<>();
 
-        if(vertices.isEmpty()){
+        if (vertices.isEmpty()) {
             return adjacencies;
         }
 
         Iterator<Vertex> iterator = vertices.iterator();
         adjacencies.addAll(Graphs.neighborSetOf(graph, iterator.next()));
-        while(iterator.hasNext()){
+        while (iterator.hasNext()) {
             Vertex vertex = iterator.next();
             adjacencies = getIntersectSet(adjacencies, Graphs.neighborSetOf(graph, vertex));
         }
@@ -154,21 +153,21 @@ public class CustomizedBipartiteGraph {
      * @return java.util.Set<mbe.common.Vertex>
      * @author Jiri Yu
      */
-    public Set<Vertex> getIntersectSet(Set<Vertex> A, Set<Vertex> B){
+    public Set<Vertex> getIntersectSet(Set<Vertex> A, Set<Vertex> B) {
         Set<Vertex> intersectSet = new HashSet<>();
-        if(A.size() > B.size()){
+        if (A.size() > B.size()) {
             Iterator<Vertex> iterator = A.iterator();
-            while(iterator.hasNext()){
+            while (iterator.hasNext()) {
                 Vertex vertex = iterator.next();
-                if(B.contains(vertex)){
+                if (B.contains(vertex)) {
                     intersectSet.add(vertex);
                 }
             }
-        }else{
+        } else {
             Iterator<Vertex> iterator = B.iterator();
-            while(iterator.hasNext()){
+            while (iterator.hasNext()) {
                 Vertex vertex = iterator.next();
-                if(A.contains(vertex)){
+                if (A.contains(vertex)) {
                     intersectSet.add(vertex);
                 }
             }
@@ -184,13 +183,13 @@ public class CustomizedBipartiteGraph {
      * @return java.util.Set<mbe.common.Vertex>
      * @author Jiri Yu
      */
-    public Set<Vertex> getAdjacentVerticesAndIntersect(Set<Vertex> gammaX, Vertex v){
+    public Set<Vertex> getAdjacentVerticesAndIntersect(Set<Vertex> gammaX, Vertex v) {
         Set<Vertex> vertices = Graphs.neighborSetOf(graph, v);
         return getIntersectSet(gammaX, vertices);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         // Most of the time graph.toString() is confusing.
         // I shall draw a graph that will be more clear.
         return graph.toString();

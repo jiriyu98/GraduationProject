@@ -55,7 +55,7 @@ public class Vertex implements Comparable<Vertex>{
             return true;
         }
         Vertex vertex = (Vertex) object;
-        if(this.id == vertex.id && this.value == vertex.value && this.partition == vertex.partition){
+        if(this.id == vertex.id && this.value.equals(vertex.value) && this.partition.equals(vertex.partition)){
             return true;
         }
         return false;

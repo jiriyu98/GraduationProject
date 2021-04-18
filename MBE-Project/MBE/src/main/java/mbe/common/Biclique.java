@@ -5,6 +5,8 @@ import java.util.TreeSet;
 
 /**
  * @description: data structure for biclique in bipartite graph
+ * Pay attention, we use Tree set there, which is auto-sorted in order of Vertex.value,
+ * because we want to implement hashcode() method easier.
  *
  * @className: Biclique
  * @author: Jiri Yu
@@ -47,7 +49,7 @@ public class Biclique {
         }
 
         Biclique biclique = (Biclique)o;
-        return this.leftSet == biclique.leftSet && this.rightSet == biclique.rightSet;
+        return this.leftSet.equals(biclique.leftSet) && this.rightSet.equals(biclique.rightSet);
     }
 
     @Override

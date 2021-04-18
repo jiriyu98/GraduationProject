@@ -40,7 +40,7 @@ public class Edge {
             return true;
         }
         Edge edge = (Edge)object;
-        if(X == edge.X && Y == edge.Y){
+        if(X.equals(edge.X) && Y.equals(edge.Y)){
             return true;
         }
         return false;
