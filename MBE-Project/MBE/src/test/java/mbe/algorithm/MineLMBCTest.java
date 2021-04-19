@@ -27,7 +27,7 @@ public class MineLMBCTest {
     public static void setup(){
         numL = 10;
         numR = 10;
-        graph = new CustomizedBipartiteGraph(numL, numR);
+        graph = new CustomizedBipartiteGraph();
     }
 
     @Test
@@ -55,9 +55,11 @@ public class MineLMBCTest {
         int ms = 1;
 
         // Step 3, invoke assertEquals
-        LMBC.mineLMBC(X, tailX, gammaX, ms);
-        System.out.println("There are " + LMBC.getBicliques().size() + "'s maximal bicliques.");
-        System.out.println(LMBC.getBicliques());
+        LMBC.calculateBC(X, tailX, gammaX, ms);
+//        System.out.println("There are " + LMBC.getBicliques().size() + "'s maximal bicliques.");
+//        System.out.println(LMBC.getBicliques());
+
+        // Step 4, verify the number of bicliques. It should be 10 bicliques in maximal biclique set.
         assertEquals(10, LMBC.getBicliques().size());
     }
 
@@ -105,7 +107,6 @@ public class MineLMBCTest {
         }
         edges = new Edge[count];
         assertEquals(numL/2*3-2, count);
-        System.out.println("There are " + count + "'s edges in graph.");
 
         // graph add vertices and edges
         graph.insertAllVertices(verticesL);

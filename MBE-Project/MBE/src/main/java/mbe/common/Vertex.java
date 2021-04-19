@@ -68,6 +68,11 @@ public class Vertex implements Comparable<Vertex>{
 
     @Override
     public int compareTo(Vertex vertex){
-        return this.value.compareTo(vertex.value);
+        // TODO(jiriyu): it may be costly, can I find a better way?
+        int cmp = this.value.compareTo(vertex.value);
+        if(cmp == 0){
+            return this.id.compareTo(vertex.id);
+        }
+        return cmp;
     }
 }

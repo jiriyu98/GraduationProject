@@ -30,7 +30,9 @@ public class BicliqueTest {
 
         biclique = new Biclique(vertexLeftSet, vertexRightSet);
 
-        System.out.println(biclique.getLeftSet());
-        System.out.println(biclique.getRightSet());
+        Set<Vertex> verticesL = biclique.getLeftSet();
+        Set<Vertex> verticesR = biclique.getRightSet();
+        assertEquals(vertexLeftSet, verticesL);
+        assertEquals(vertexRightSet, verticesR);
     }
 }

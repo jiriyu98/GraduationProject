@@ -14,18 +14,10 @@ import java.util.*;
  * @author: Jiri Yu
  * @date: 2021/4/12
  */
-public class MineLMBC {
-    private final CustomizedBipartiteGraph customizedBipartiteGraph;
-
-    private Set<Biclique> maximalBicliques;
+public class MineLMBC extends AbstractStaticBC {
 
     public MineLMBC(CustomizedBipartiteGraph customizedBipartiteGraph) {
-        this.customizedBipartiteGraph = customizedBipartiteGraph;
-        this.maximalBicliques = new HashSet<>();
-    }
-
-    public Set<Biclique> getBicliques() {
-        return maximalBicliques;
+        super(customizedBipartiteGraph);
     }
 
     /*
@@ -38,7 +30,7 @@ public class MineLMBC {
      * @return void
      * @author Jiri Yu
      */
-    public void mineLMBC(Set<Vertex> X, Set<Vertex> gammaX, Set<Vertex> tailX, long ms) {
+    public void calculateBC(Set<Vertex> X, Set<Vertex> gammaX, Set<Vertex> tailX, long ms) {
         // *Line* means line number of the MineLMBC in paper.
 
         // it is useful for following lines to store size of (X U {v}).
@@ -79,9 +71,7 @@ public class MineLMBC {
                 }
             }
         });
-        Iterator<Vertex> iteratorTailXNew = tailX.iterator();
-        while (iteratorTailXNew.hasNext()) {
-            Vertex vertex = iteratorTailXNew.next();
+        for (Vertex vertex : tailX){
             ascendingOrderSet.add(vertex);
         }
         assert (ascendingOrderSet.size() == tailX.size())
@@ -121,7 +111,7 @@ public class MineLMBC {
                     // It's in the loop, so tailX will be used next time
                     Set<Vertex> tailXNew = new HashSet<>(tailX);
                     tailXNew.removeAll(Y);
-                    mineLMBC(Y, gammaXUnionVertex, tailXNew, ms);
+                    calculateBC(Y, gammaXUnionVertex, tailXNew, ms);
                 }
             }
         }

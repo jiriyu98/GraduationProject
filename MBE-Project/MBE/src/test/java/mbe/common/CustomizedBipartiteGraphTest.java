@@ -4,10 +4,11 @@ import mbe.utils.RandomGenerate;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @description: test all methods in CustomizedBipartiteGraph class.
@@ -37,8 +38,8 @@ public class CustomizedBipartiteGraphTest {
      * @author Jiri Yu
      */
     @Test
-    public void testInsert(){
-        CustomizedBipartiteGraph graph = new CustomizedBipartiteGraph(numL, numR);
+    public void testInsert1(){
+        CustomizedBipartiteGraph graph = new CustomizedBipartiteGraph();
 
         Set<Edge> edgeSet = new HashSet<>();
         Set<Vertex> vertexSet = new HashSet<>();
@@ -54,6 +55,38 @@ public class CustomizedBipartiteGraphTest {
 
         assertEquals(graph.getEdges(), new HashSet<Edge>(edgeSet));
         assertEquals(graph.getVertices(), new HashSet<Vertex>(vertexSet));
+    }
+
+    /*
+     * @description: Test Insert
+     *
+     * @param
+     * @return void
+     * @author Jiri Yu
+     */
+    @Test
+    public void testInsert2(){
+        Set<Edge> edgeSet = new HashSet<>();
+        Set<Vertex> vertexSet = new HashSet<>();
+
+        Vertex[] verticesL = RandomGenerate.randomGenerateVertices(numL, Partition.LEFT, vertexSet);
+        Vertex[] verticesR = RandomGenerate.randomGenerateVertices(numR, Partition.RIGHT, vertexSet);
+
+        Edge[] edges = RandomGenerate.randomGenerateEdges(edgeSet, verticesL, verticesR, numE);
+
+        Set<Vertex> setL = new HashSet<>(Arrays.asList(verticesL));
+        Set<Vertex> setR = new HashSet<>(Arrays.asList(verticesR));
+
+        assertEquals(verticesL.length, setL.size());
+        assertEquals(verticesR.length, setR.size());
+
+        CustomizedBipartiteGraph graph = new CustomizedBipartiteGraph(setL, setR);
+        assertEquals(setL, graph.getVerticesL());
+        assertEquals(setR, graph.getVerticesR());
+        assertEquals(graph.getVertices(), new HashSet<Vertex>(vertexSet));
+
+        graph.insertAllEdges(edges);
+        assertEquals(graph.getEdges(), new HashSet<Edge>(edgeSet));
     }
 
     /*
@@ -76,7 +109,7 @@ public class CustomizedBipartiteGraphTest {
      */
     @Test
     public void testAllMethods(){
-        CustomizedBipartiteGraph graph = new CustomizedBipartiteGraph(numL, numR);
+        CustomizedBipartiteGraph graph = new CustomizedBipartiteGraph();
 
         int count = 0;
         Edge[] edges;
@@ -127,7 +160,7 @@ public class CustomizedBipartiteGraphTest {
 
         verticesExpected2.add(verticesR[2]);
 
-        assertEquals(verticesExpected2, graph.getIntersectSet(verticesTest2A, verticesTest2B));
+        assertEquals(verticesExpected2, graph.getIntersectVerticesSet(verticesTest2A, verticesTest2B));
 
         // Step 3, test getAdjacentVertices method
         // Step 3.1, test set 1.

@@ -8,30 +8,30 @@ package mbe.common;
  * @date: 2021/4/4 
  */
 public class Edge {
-    private final Vertex X;
-    private final Vertex Y;
+    private final Vertex left;
+    private final Vertex right;
 
-    public Edge(Long X, Long Y){
-        this.X = new Vertex(X);
-        this.Y = new Vertex(Y);
+    public Edge(Long left, Long right){
+        this.left = new Vertex(left);
+        this.right = new Vertex(right);
     }
 
-    public Edge(Vertex X, Vertex Y){
-        this.X = X;
-        this.Y = Y;
+    public Edge(Vertex left, Vertex right){
+        this.left = left;
+        this.right = right;
     }
 
-    public Vertex getX() {
-        return X;
+    public Vertex getLeft() {
+        return left;
     }
 
-    public Vertex getY() {
-        return Y;
+    public Vertex getRight() {
+        return right;
     }
 
     @Override
     public String toString(){
-        return "<" + X + " - " + Y + ">";
+        return "<" + left + " - " + right + ">";
     }
 
     @Override
@@ -40,7 +40,7 @@ public class Edge {
             return true;
         }
         Edge edge = (Edge)object;
-        if(X.equals(edge.X) && Y.equals(edge.Y)){
+        if(left.equals(edge.left) && right.equals(edge.right)){
             return true;
         }
         return false;

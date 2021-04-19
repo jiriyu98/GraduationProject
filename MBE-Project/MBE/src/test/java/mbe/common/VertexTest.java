@@ -22,20 +22,22 @@ public class VertexTest {
             assertEquals(vertex, vertices.get(i));
             if(i>=1){
                 assertNotNull(vertices.get(i-1));
-                assertEquals(0, vertices.get(i).compareTo(vertices.get(i-1)));
+                assertEquals(1, vertices.get(i).compareTo(vertices.get(i-1)));
             }
         }
     }
 
     @Test
     public void sort(){
-        String[] strings = {"V1", "V2", "V3", "V4", "V13", "VV", "VN"};
+        String[] strings = {"V1", "V2", "V3", "V4", "V13", "VV", "VN", "VN"};
         Vertex[] vertices = new Vertex[strings.length];
         for (int i = 0; i < strings.length; i++) {
             vertices[i] = new Vertex((long)i, strings[i]);
         }
         Arrays.sort(vertices);
         Arrays.sort(strings);
+
+        assertEquals(strings.length, vertices.length);
         for (int i = 0; i < strings.length; i++) {
             assertEquals(strings[i], vertices[i].getValue());
         }

@@ -16,29 +16,25 @@ import java.util.*;
  * @date: 2021/4/10
  */
 public class CustomizedBipartiteGraph {
-    private final long numVerticesL;
-    private final long numVerticesR;
-
     private final Set<Vertex> verticesL;
     private final Set<Vertex> verticesR;
 
     private Graph<Vertex, Edge> graph;
 
-    public CustomizedBipartiteGraph(long numVerticesL,
-                                    long numVerticesR) {
-        this.numVerticesL = numVerticesL;
-        this.numVerticesR = numVerticesR;
+    public CustomizedBipartiteGraph() {
         this.verticesL = new HashSet<>();
         this.verticesR = new HashSet<>();
         this.graph = new SimpleGraph<>(Edge.class);
     }
 
-    public long getNumVerticesL() {
-        return numVerticesL;
-    }
+    public CustomizedBipartiteGraph(Set<Vertex> verticesL,
+                                    Set<Vertex> verticesR) {
+        this.verticesL = new HashSet<>();
+        this.verticesR = new HashSet<>();
+        this.graph = new SimpleGraph<>(Edge.class);
 
-    public long getNumVerticesR() {
-        return numVerticesR;
+        insertAllVertices(verticesL);
+        insertAllVertices(verticesR);
     }
 
     public Set<Vertex> getVerticesL() {
@@ -47,6 +43,22 @@ public class CustomizedBipartiteGraph {
 
     public Set<Vertex> getVerticesR() {
         return verticesR;
+    }
+
+    public Set<Edge> getEdges() {
+        return graph.edgeSet();
+    }
+
+    public Set<Vertex> getVertices() {
+        return graph.vertexSet();
+    }
+
+    public boolean containsEdge(Edge edge){
+        return graph.containsEdge(edge);
+    }
+
+    public boolean containsEdge(Vertex v1, Vertex v2){
+        return graph.containsEdge(v1, v2);
     }
 
     public boolean insertVertex(Vertex vertex) {
@@ -58,25 +70,15 @@ public class CustomizedBipartiteGraph {
         return graph.addVertex(vertex);
     }
 
-    public Set<Edge> getEdges() {
-        return graph.edgeSet();
-    }
-
-    public Set<Vertex> getVertices() {
-        return graph.vertexSet();
-    }
-
-    /*
-     * @description: I recommend to use insertVertex instead of insertAllVertices.
-     *
-     * @param vertices
-     * @return void
-     * @author Jiri Yu
-     */
-    @Deprecated
     public void insertAllVertices(Vertex[] vertices) {
         for (int i = 0; i < vertices.length; i++) {
             insertVertex(vertices[i]);
+        }
+    }
+
+    public void insertAllVertices(Set<Vertex> vertices) {
+        for (Vertex vertex : vertices){
+            insertVertex(vertex);
         }
     }
 
@@ -92,20 +94,18 @@ public class CustomizedBipartiteGraph {
         if (graph.containsEdge(edge)) {
             return false;
         }
-        return graph.addEdge(edge.getX(), edge.getY(), edge);
+        return graph.addEdge(edge.getLeft(), edge.getRight(), edge);
     }
 
-    /*
-     * @description: I recommend to use insertEdge instead of insertAllEdges.
-     *
-     * @param edges
-     * @return void
-     * @author Jiri Yu
-     */
-    @Deprecated
     public void insertAllEdges(Edge[] edges) {
         for (int i = 0; i < edges.length; i++) {
             insertEdge(edges[i]);
+        }
+    }
+
+    public void insertAllEdges(Set<Edge> edges) {
+        for (Edge edge : edges){
+            insertEdge(edge);
         }
     }
 
@@ -140,7 +140,7 @@ public class CustomizedBipartiteGraph {
         adjacencies.addAll(Graphs.neighborSetOf(graph, iterator.next()));
         while (iterator.hasNext()) {
             Vertex vertex = iterator.next();
-            adjacencies = getIntersectSet(adjacencies, Graphs.neighborSetOf(graph, vertex));
+            adjacencies = getIntersectVerticesSet(adjacencies, Graphs.neighborSetOf(graph, vertex));
         }
         return adjacencies;
     }
@@ -153,20 +153,16 @@ public class CustomizedBipartiteGraph {
      * @return java.util.Set<mbe.common.Vertex>
      * @author Jiri Yu
      */
-    public Set<Vertex> getIntersectSet(Set<Vertex> A, Set<Vertex> B) {
+    public Set<Vertex> getIntersectVerticesSet(Set<Vertex> A, Set<Vertex> B) {
         Set<Vertex> intersectSet = new HashSet<>();
         if (A.size() > B.size()) {
-            Iterator<Vertex> iterator = A.iterator();
-            while (iterator.hasNext()) {
-                Vertex vertex = iterator.next();
+            for(Vertex vertex : A){
                 if (B.contains(vertex)) {
                     intersectSet.add(vertex);
                 }
             }
         } else {
-            Iterator<Vertex> iterator = B.iterator();
-            while (iterator.hasNext()) {
-                Vertex vertex = iterator.next();
+            for(Vertex vertex : B){
                 if (A.contains(vertex)) {
                     intersectSet.add(vertex);
                 }
@@ -185,7 +181,7 @@ public class CustomizedBipartiteGraph {
      */
     public Set<Vertex> getAdjacentVerticesAndIntersect(Set<Vertex> gammaX, Vertex v) {
         Set<Vertex> vertices = Graphs.neighborSetOf(graph, v);
-        return getIntersectSet(gammaX, vertices);
+        return getIntersectVerticesSet(gammaX, vertices);
     }
 
     @Override

@@ -22,7 +22,6 @@ public class EdgeTest {
             if(i >= 1){
                 assertNotEquals(edges[i], edges[i-1]);
             }
-            System.out.println(edges[i]);
         }
     }
 }
