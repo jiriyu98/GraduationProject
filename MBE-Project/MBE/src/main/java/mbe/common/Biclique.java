@@ -29,12 +29,29 @@ public class Biclique {
         this.rightSet.addAll(rightSet);
     }
 
+    public Biclique(Biclique biclique){
+        this.leftSet = new TreeSet<>(biclique.getLeftSet());
+        this.rightSet = new TreeSet<>(biclique.getRightSet());
+    }
+
     public Set<Vertex> getLeftSet() {
         return this.leftSet;
     }
 
     public Set<Vertex> getRightSet() {
         return this.rightSet;
+    }
+
+    public boolean containsEdge(Edge edge){
+        return leftSet.contains(edge.getLeft()) && rightSet.contains(edge.getRight());
+    }
+
+    public void removeLeftVertex(Vertex vertex){
+        leftSet.remove(vertex);
+    }
+
+    public void removeRightVertex(Vertex vertex){
+        rightSet.remove(vertex);
     }
 
     @Override

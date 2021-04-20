@@ -1,9 +1,6 @@
 package mbe.algorithm;
 
-import mbe.common.CustomizedBipartiteGraph;
-import mbe.common.Edge;
-import mbe.common.Partition;
-import mbe.common.Vertex;
+import mbe.common.*;
 import mbe.utils.RandomGenerate;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -54,13 +51,16 @@ public class MineLMBCTest {
         // ms
         int ms = 1;
 
-        // Step 3, invoke assertEquals
+        // Step 3, invoke calculateBC
         LMBC.calculateBC(X, tailX, gammaX, ms);
-//        System.out.println("There are " + LMBC.getBicliques().size() + "'s maximal bicliques.");
-//        System.out.println(LMBC.getBicliques());
+        Set<Biclique> test1 = LMBC.getMaximalBicliques();
+
+        // Step 4, invoke getBicliques
+        Set<Biclique> test2 = LMBC.getBicliques();
 
         // Step 4, verify the number of bicliques. It should be 10 bicliques in maximal biclique set.
-        assertEquals(10, LMBC.getBicliques().size());
+        assertEquals(test1, test2);
+        assertEquals(10, LMBC.getMaximalBicliques().size());
     }
 
     /*

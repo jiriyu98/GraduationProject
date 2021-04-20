@@ -37,6 +37,13 @@ public class CustomizedBipartiteGraph {
         insertAllVertices(verticesR);
     }
 
+    // copy consturctor
+//    public CustomizedBipartiteGraph(CustomizedBipartiteGraph customizedBipartiteGraph) {
+//        this.verticesL = new HashSet<>(customizedBipartiteGraph.getVerticesL());
+//        this.verticesR = new HashSet<>(customizedBipartiteGraph.getVerticesL());
+//        this.graph = new SimpleGraph(customizedBipartiteGraph.graph);
+//    }
+
     public Set<Vertex> getVerticesL() {
         return verticesL;
     }

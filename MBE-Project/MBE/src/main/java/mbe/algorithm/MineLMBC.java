@@ -20,6 +20,20 @@ public class MineLMBC extends AbstractStaticBC {
         super(customizedBipartiteGraph);
     }
 
+    public Set<Biclique> getMaximalBicliques(){
+        return maximalBicliques;
+    }
+
+    @Override
+    public Set<Biclique> getBicliques(){
+        maximalBicliques.clear();
+        Set<Vertex> tailX = customizedBipartiteGraph.getVerticesL();
+        Set<Vertex> gammaX = customizedBipartiteGraph.getVerticesR();
+        int ms = 1;
+        calculateBC(new HashSet<>(), tailX, gammaX, ms);
+        return maximalBicliques;
+    }
+
     /*
      * @description: mineLMBC, an algorithm for static bipartite graph.
      *
