@@ -27,10 +27,11 @@ public class MineLMBC extends AbstractStaticBC {
     @Override
     public Set<Biclique> getBicliques(){
         maximalBicliques.clear();
-        Set<Vertex> tailX = customizedBipartiteGraph.getVerticesL();
-        Set<Vertex> gammaX = customizedBipartiteGraph.getVerticesR();
+        Set<Vertex> X = new HashSet<>();
+        Set<Vertex> tailX = new HashSet<>(customizedBipartiteGraph.getVerticesL());
+        Set<Vertex> gammaX = new HashSet<>(customizedBipartiteGraph.getVerticesR());
         int ms = 1;
-        calculateBC(new HashSet<>(), tailX, gammaX, ms);
+        calculateBC(X, tailX, gammaX, ms);
         return maximalBicliques;
     }
 

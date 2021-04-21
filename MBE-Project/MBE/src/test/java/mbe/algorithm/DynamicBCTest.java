@@ -2,6 +2,7 @@ package mbe.algorithm;
 
 import mbe.common.*;
 import mbe.utils.RandomGenerate;
+import org.apache.commons.math3.analysis.function.Min;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -43,12 +44,35 @@ public class DynamicBCTest {
     }
 
     @Test
-    public void calculateBC() {
+    public void testCalculateBC() {
+        // Step 1, preparation
+        Set<Set<Biclique>> sets = new HashSet<>();
+
+        // Step 2, preparation
+        Set<Biclique> BC = new HashSet<>();
+
+        // Step 3, test calculateDelBC method.
+        for (int i=0; i<numL/2; ++i){
+            System.out.println(i + "'s round:");
+
+            Set<Edge> edgeSet = new HashSet<>();
+            edgeSet.add(new Edge(verticesL[0], verticesR[i]));
+            customizedBipartiteGraph.insertAllEdges(edgeSet);
+            DynamicBC dynamicBC = new DynamicBC(customizedBipartiteGraph, edgeSet, BC, MineLMBC.class);
+            AbstractStaticBC staticBC = new MineLMBC(customizedBipartiteGraph);
+
+            Set<Biclique> expectedBC = staticBC.getBicliques();
+            Set<Biclique> actualBC = dynamicBC.getBicliques();
+            assertEquals(expectedBC, actualBC);
+
+            BC.clear();
+            BC.addAll(expectedBC);
+        }
     }
 
     @Ignore
     @Test
-    public void calculateNewBC() {
+    public void testCalculateNewBC() {
         // Step 1, preparation
         Set<Set<Biclique>> sets = new HashSet<>();
 
@@ -69,8 +93,9 @@ public class DynamicBCTest {
         }
     }
 
+    @Ignore
     @Test
-    public void calculateSubBC() {
+    public void testCalculateSubBC() {
         // Step 1, preparation
         Set<Set<Biclique>> sets = new HashSet<>();
 

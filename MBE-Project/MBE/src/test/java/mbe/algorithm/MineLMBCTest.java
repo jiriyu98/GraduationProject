@@ -3,6 +3,7 @@ package mbe.algorithm;
 import mbe.common.*;
 import mbe.utils.RandomGenerate;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashSet;
@@ -25,6 +26,26 @@ public class MineLMBCTest {
         numL = 10;
         numR = 10;
         graph = new CustomizedBipartiteGraph();
+    }
+
+
+    @Ignore
+    @Test
+    public void testCase(){
+        Set<Vertex> vertexSet = new HashSet<>();
+        Vertex[] verticesL = RandomGenerate.randomGenerateVertices(numL, Partition.LEFT, vertexSet);
+        Vertex[] verticesR = RandomGenerate.randomGenerateVertices(numR, Partition.RIGHT, vertexSet);
+
+        graph.insertAllVertices(verticesL);
+        graph.insertAllVertices(verticesR);
+
+        for (int i=0; i<numL/2; ++i){
+            Set<Edge> edgeSet = new HashSet<>();
+            edgeSet.add(new Edge(verticesL[0], verticesR[i]));
+            graph.insertAllEdges(edgeSet);
+            AbstractStaticBC staticBC = new MineLMBC(graph);
+            assertEquals(1, staticBC.getBicliques().size());
+        }
     }
 
     @Test
