@@ -10,3 +10,4 @@ out
 gen
 dependency-reduced-pom.xml
 target/
+/src/main/resources/data/

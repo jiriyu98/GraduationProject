@@ -89,6 +89,8 @@ public class MineLMBC extends AbstractStaticBC {
         for (Vertex vertex : tailX){
             ascendingOrderSet.add(vertex);
         }
+
+        // FIXME(Jiri Yu): remove it when releasing
         assert (ascendingOrderSet.size() == tailX.size())
                 : "tailX.size():" + tailX.size() + ", ascendingOrderSet.size():" + ascendingOrderSet.size();
 

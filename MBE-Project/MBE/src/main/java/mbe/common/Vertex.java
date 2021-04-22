@@ -1,7 +1,5 @@
 package mbe.common;
 
-import java.util.HashMap;
-
 /**
  * @description: data structure for vertex in bipartite graph
  * 
@@ -13,6 +11,12 @@ public class Vertex implements Comparable<Vertex>{
     private final Long id;
     private final String value;
     private final String partition;
+
+    public Vertex(){
+        this.id = null;
+        this.value = null;
+        this.partition = null;
+    }
 
     public Vertex(Long id){
         this.id = id;
