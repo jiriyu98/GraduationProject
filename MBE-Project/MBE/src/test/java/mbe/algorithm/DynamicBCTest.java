@@ -53,8 +53,6 @@ public class DynamicBCTest {
 
         // Step 3, test calculateDelBC method.
         for (int i=0; i<numL/2; ++i){
-            System.out.println(i + "'s round:");
-
             Set<Edge> edgeSet = new HashSet<>();
             edgeSet.add(new Edge(verticesL[0], verticesR[i]));
             customizedBipartiteGraph.insertAllEdges(edgeSet);

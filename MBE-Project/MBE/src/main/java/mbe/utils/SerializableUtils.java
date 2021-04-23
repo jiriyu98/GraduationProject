@@ -1,9 +1,9 @@
 package mbe.utils;
 
+import akka.japi.Pair;
 import mbe.common.Edge;
 import mbe.common.Partition;
 import mbe.common.Vertex;
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -20,9 +20,12 @@ import java.util.Set;
  * @date: 2021/4/21
  */
 public class SerializableUtils {
+    private static final String directory = "src/main/resources/data/";
+    private static final String fileExtension = "txt";
+    private static final int filesNum = 4;
 
     public static String serializePojo(Object object, String fileName) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
+        fileName = directory + fileName;
         File file = new File(fileName);
         if(file.exists()){
             file.delete();
@@ -31,30 +34,62 @@ public class SerializableUtils {
         if(!file.createNewFile()){
             throw new IOException("Create new file failed.");
         }
+
+        ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.writeValue(file, object);
         String json = objectMapper.writeValueAsString(object);
         return json;
     }
 
     public static <T> T deserializePojo(String fileName, TypeReference<T> valueTypeRef) throws IOException {
+        fileName = directory + fileName;
         File file = new File(fileName);
-        if(file.exists()){
+        if(!file.exists()){
             throw new IOException("File doesn't exist.");
         }
+
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(fileName, valueTypeRef);
+        return objectMapper.readValue(file, valueTypeRef);
+    }
+
+    public static <T> T deserializePojo(String fileName, Class<T> classT) throws IOException {
+        fileName = directory + fileName;
+        File file = new File(fileName);
+        if(!file.exists()){
+            throw new IOException("File doesn't exist.");
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(file, classT);
     }
 
     public static void main(String[] args) throws IOException {
-        Set<Vertex> vertices = new HashSet<>();
-        Vertex[] verticesL = RandomGenerate.randomGenerateVertices(1000, Partition.LEFT, vertices);
-        Vertex[] verticesR = RandomGenerate.randomGenerateVertices(1000, Partition.RIGHT, vertices);
-        String json = serializePojo(vertices, "src/main/resources/data/case1Vertices.txt");
+        File dirc = new File(directory);
+        for (File file1 : dirc.listFiles()){
+            file1.delete();
+        }
+        assert dirc.listFiles().length == 0 : "delete not true";
 
-//        Set<Edge> edges = new HashSet<>();
-//        Edge[] es =
-//
-//        Set<Vertex> verticesNew = deserializePojo(json, new TypeReference<HashSet<Vertex>>(){});
-//        assert vertices == verticesNew : "Wrong";
+        String[][] fileNames = new String[filesNum][3];
+        int[][] sizes = {{100, 100, 100}, {1000, 1000, 1000}, {10000, 10000, 10000}, {100000, 100000, 800000}};
+
+        for (int i=0; i<fileNames.length; ++i){
+            String vl = "case" + (i+1) + "Vertices" + "." + sizes[i][0] + Partition.LEFT + fileExtension;
+            String vr = "case" + (i+1) + "Vertices" + "." + sizes[i][1] + Partition.RIGHT + fileExtension;
+            String e = "case" + (i+1) + "Edges" + "." + sizes[i][2] + fileExtension;
+            fileNames[i][0] = vl;
+            fileNames[i][1] = vr;
+            fileNames[i][2] = e;
+
+            Set<Vertex> vertices = new HashSet<>();
+            Set<Edge> edges = new HashSet<>();
+            Vertex[] verticesL = RandomGenerate.randomGenerateVertices(sizes[i][0], Partition.LEFT, vertices);
+            Vertex[] verticesR = RandomGenerate.randomGenerateVertices(sizes[i][1], Partition.RIGHT, vertices);
+            Edge[] es =  RandomGenerate.randomGenerateEdges(edges, verticesL, verticesR, sizes[i][2]);
+
+            SerializableUtils.serializePojo(verticesL, vl);
+            SerializableUtils.serializePojo(verticesR, vr);
+            SerializableUtils.serializePojo(es, e);
+        }
     }
 }

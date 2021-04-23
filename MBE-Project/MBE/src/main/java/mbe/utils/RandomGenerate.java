@@ -12,16 +12,21 @@ import java.util.Set;
  */
 public class RandomGenerate {
 
+    private static final int stringLen = 10;
+
     public static Vertex[] randomGenerateVertices(int len, String partition, Set<Vertex> vertexSet){
         Vertex[] vertices = new Vertex[len];
         for (int i = 0; i < len; i++) {
-            vertices[i] = new Vertex((long)i, RandomStringUtils.random(len, true, true), partition);
+            vertices[i] = new Vertex((long)i, RandomStringUtils.random(stringLen, true, true), partition);
             vertexSet.add(vertices[i]);
         }
         return vertices;
     }
 
     public static Edge[] randomGenerateEdges(Set<Edge> edgeSet, Vertex[] verticesL, Vertex[] verticesR, int numE){
+        if(numE > verticesL.length * verticesR.length){
+            numE = verticesL.length * verticesR.length;
+        }
         Edge[] edges = new Edge[numE];
         int count = 0;
         do{

@@ -11,6 +11,11 @@ public class Edge {
     private final Vertex left;
     private final Vertex right;
 
+    public Edge(){
+        this.left = null;
+        this.right = null;
+    }
+
     public Edge(Long left, Long right){
         this.left = new Vertex(left);
         this.right = new Vertex(right);
