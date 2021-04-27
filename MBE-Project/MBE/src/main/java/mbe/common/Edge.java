@@ -1,5 +1,7 @@
 package mbe.common;
 
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonUnwrapped;
+
 /**
  * @description: data structure for edge in bipartite graph
  *
@@ -8,7 +10,9 @@ package mbe.common;
  * @date: 2021/4/4 
  */
 public class Edge {
+    @JsonUnwrapped(prefix = "L")
     private final Vertex left;
+    @JsonUnwrapped(prefix = "R")
     private final Vertex right;
 
     public Edge(){

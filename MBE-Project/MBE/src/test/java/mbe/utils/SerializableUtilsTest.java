@@ -6,9 +6,13 @@ import mbe.common.Vertex;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.Test;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -19,27 +23,36 @@ import static org.junit.Assert.*;
 public class SerializableUtilsTest {
     @Test
     public void test() throws IOException {
+
+        // Test deserializePojos()
         Set<Vertex> vertices = new HashSet<>();
         Vertex[] verticesL = RandomGenerate.randomGenerateVertices(10000, Partition.LEFT, vertices);
         Vertex[] verticesR = RandomGenerate.randomGenerateVertices(10000, Partition.RIGHT, vertices);
-        SerializableUtils.serializePojo(vertices, "testCase1Vertices.txt");
-        Set<Vertex> verticesNew = SerializableUtils.deserializePojo("testCase1Vertices.txt", new TypeReference<HashSet<Vertex>>(){});
-        assertEquals(vertices.size(), verticesNew.size());
-        assertEquals(vertices.size(), verticesL.length + verticesR.length);
-        assertEquals(vertices, verticesNew);
+        SerializableUtils.serializePojo(Arrays.asList(verticesL), "testCase1VerticesL.csv", Vertex.class);
+        SerializableUtils.serializePojo(Arrays.asList(verticesR), "testCase1VerticesR.csv", Vertex.class);
+        List<Vertex> vertexListL = SerializableUtils.deserializePojos("testCase1VerticesL.csv", Vertex.class);
+        List<Vertex> vertexListR = SerializableUtils.deserializePojos("testCase1VerticesR.csv", Vertex.class);
+        assertEquals(Arrays.asList(verticesL), vertexListL);
+        assertEquals(Arrays.asList(verticesR), vertexListR);
 
         Set<Edge> edges = new HashSet<>();
         Edge[] es = RandomGenerate.randomGenerateEdges(edges, verticesL, verticesR, 10000);
-        SerializableUtils.serializePojo(es, "testCase1Edges.txt");
-        Edge[] esNew = SerializableUtils.deserializePojo("testCase1Edges.txt", Edge[].class);
-        Set<Edge> edgesNew = SerializableUtils.deserializePojo("testCase1Edges.txt", new TypeReference<HashSet<Edge>>() {
-        });
-        assertArrayEquals(es, esNew);
-        assertEquals(edges, edgesNew);
+        SerializableUtils.serializePojo(Arrays.asList(es), "testCase1Edges.csv", Edge.class);
+        List<Edge> edgeList = SerializableUtils.deserializePojos("testCase1Edges.csv", Edge.class);
+        assertEquals(Arrays.asList(es).get(0), edgeList.get(0));
 
-        File file1 = new File("src/main/resources/data/testCase1Vertices.txt");
-        File file2 = new File("src/main/resources/data/testCase1Edges.txt");
+        File file1 = new File("src/main/resources/data/testCase1VerticesL.csv");
+        File file2 = new File("src/main/resources/data/testCase1VerticesR.csv");
+        File file3 = new File("src/main/resources/data/testCase1Edges.csv");
+
+        // Test {@link #SerializableUtils.deserializePojo()}
+        BufferedReader br = new BufferedReader(new FileReader(file3));
+        String line = br.readLine();
+        Edge edge = SerializableUtils.deserializePojo(line, Edge.class);
+        assertEquals(edge, es[0]);
+
         file1.delete();
         file2.delete();
+        file3.delete();
     }
 }

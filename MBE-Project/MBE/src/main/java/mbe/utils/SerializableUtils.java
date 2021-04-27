@@ -4,27 +4,30 @@ import akka.japi.Pair;
 import mbe.common.Edge;
 import mbe.common.Partition;
 import mbe.common.Vertex;
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @description: generate test cases into csv file, for flink dataStream use.
+ * Do not use Kryo or others in Flink because they are costly.
  *
  * @className: SerializableUtils
  * @author: Jiri Yu
  * @date: 2021/4/21
  */
 public class SerializableUtils {
-    private static final String directory = "src/main/resources/data/";
-    private static final String fileExtension = "txt";
+    public static final String directory = "src/main/resources/data/";
+    public static final String fileExtension = "csv";
     private static final int filesNum = 4;
 
-    public static String serializePojo(Object object, String fileName) throws IOException {
+    public static <T> void serializePojo(List<T> objects, String fileName, Class<T> t) throws IOException {
         fileName = directory + fileName;
         File file = new File(fileName);
         if(file.exists()){
@@ -35,34 +38,41 @@ public class SerializableUtils {
             throw new IOException("Create new file failed.");
         }
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.writeValue(file, object);
-        String json = objectMapper.writeValueAsString(object);
-        return json;
+        CsvMapper csvMapper = new CsvMapper();
+        CsvSchema schema = csvMapper.schemaFor(t);
+        csvMapper.writer(schema).writeValue(file, objects);
+        return;
     }
 
-    public static <T> T deserializePojo(String fileName, TypeReference<T> valueTypeRef) throws IOException {
+    public static <T> T deserializePojo(String value, Class<T> t) throws JsonProcessingException {
+        CsvMapper csvMapper = new CsvMapper();
+        CsvSchema schema = csvMapper.schemaFor(t);
+
+        return (T)csvMapper.readerFor(t).with(schema.withColumnSeparator(',')).readValue(value);
+    }
+
+    public static <T> List<T> deserializePojos(String fileName, Class<T> t) throws IOException {
         fileName = directory + fileName;
         File file = new File(fileName);
+
         if(!file.exists()){
             throw new IOException("File doesn't exist.");
+
         }
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(file, valueTypeRef);
+        CsvMapper csvMapper = new CsvMapper();
+        CsvSchema schema = csvMapper.schemaFor(t);
+
+        return (List<T>)csvMapper.readerFor(t).with(schema.withColumnSeparator(',')).readValues(file).readAll();
     }
 
-    public static <T> T deserializePojo(String fileName, Class<T> classT) throws IOException {
-        fileName = directory + fileName;
-        File file = new File(fileName);
-        if(!file.exists()){
-            throw new IOException("File doesn't exist.");
-        }
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(file, classT);
-    }
-
+    /*
+     * @description: Create test cases into file with csv extension.
+     *
+     * @param args
+     * @return void
+     * @author Jiri Yu
+     */
     public static void main(String[] args) throws IOException {
         File dirc = new File(directory);
         for (File file1 : dirc.listFiles()){
@@ -74,9 +84,9 @@ public class SerializableUtils {
         int[][] sizes = {{100, 100, 100}, {1000, 1000, 1000}, {10000, 10000, 10000}, {100000, 100000, 800000}};
 
         for (int i=0; i<fileNames.length; ++i){
-            String vl = "case" + (i+1) + "Vertices" + "." + sizes[i][0] + Partition.LEFT + fileExtension;
-            String vr = "case" + (i+1) + "Vertices" + "." + sizes[i][1] + Partition.RIGHT + fileExtension;
-            String e = "case" + (i+1) + "Edges" + "." + sizes[i][2] + fileExtension;
+            String vl = "case" + (i+1) + "Vertices" + sizes[i][0] + Partition.LEFT + "." + fileExtension;
+            String vr = "case" + (i+1) + "Vertices" + sizes[i][1] + Partition.RIGHT + "." + fileExtension;
+            String e = "case" + (i+1) + "Edges" + sizes[i][2] + "." + fileExtension;
             fileNames[i][0] = vl;
             fileNames[i][1] = vr;
             fileNames[i][2] = e;
@@ -87,9 +97,9 @@ public class SerializableUtils {
             Vertex[] verticesR = RandomGenerate.randomGenerateVertices(sizes[i][1], Partition.RIGHT, vertices);
             Edge[] es =  RandomGenerate.randomGenerateEdges(edges, verticesL, verticesR, sizes[i][2]);
 
-            SerializableUtils.serializePojo(verticesL, vl);
-            SerializableUtils.serializePojo(verticesR, vr);
-            SerializableUtils.serializePojo(es, e);
+            SerializableUtils.serializePojo(Arrays.asList(verticesL), vl, Vertex.class);
+            SerializableUtils.serializePojo(Arrays.asList(verticesR), vr, Vertex.class);
+            SerializableUtils.serializePojo(Arrays.asList(es), e, Edge.class);
         }
     }
 }

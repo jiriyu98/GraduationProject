@@ -77,6 +77,12 @@ public class CustomizedBipartiteGraph {
         return graph.addVertex(vertex);
     }
 
+    public void insertAllVertices(List<Vertex> vertices) {
+        for (int i = 0; i < vertices.size(); i++) {
+            insertVertex(vertices.get(i));
+        }
+    }
+
     public void insertAllVertices(Vertex[] vertices) {
         for (int i = 0; i < vertices.length; i++) {
             insertVertex(vertices[i]);

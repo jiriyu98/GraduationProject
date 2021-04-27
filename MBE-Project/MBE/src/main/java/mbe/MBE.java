@@ -18,11 +18,16 @@
 
 package mbe;
 
+import mbe.common.CustomizedBipartiteGraph;
 import mbe.common.Edge;
-import mbe.source.BipartiteGraphSourceFunctionRandom;
+import mbe.common.Vertex;
+import mbe.source.CustomizedTextInputFormat;
+import mbe.utils.SerializableUtils;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+
+import java.util.List;
 
 /**
  * @ClassName: DynamicBC
@@ -50,12 +55,16 @@ public class MBE {
 //
 //		env.execute("Dynamic BC");
 
-		DataStream<Edge> source = env
-				.addSource(new BipartiteGraphSourceFunctionRandom(1000, 1000))
-				.name("new edges added : (v, v)");
+		// Step 1, create Graph and insert vertices.
+		CustomizedBipartiteGraph customizedBipartiteGraph = new CustomizedBipartiteGraph();
+		List<Vertex> verticesL = SerializableUtils.deserializePojos("case1Vertices100L.csv", Vertex.class);
+		List<Vertex> verticesR = SerializableUtils.deserializePojos("case1Vertices100R.csv", Vertex.class);
+		customizedBipartiteGraph.insertAllVertices(verticesL);
+		customizedBipartiteGraph.insertAllVertices(verticesR);
 
+		// Step, create source node, import edge from deserialization
+		DataStream<Edge> source = env.readFile(new CustomizedTextInputFormat(), SerializableUtils.directory+"case1Edges100.csv");
 		source.print();
-
 
 		env.execute("Dynamic BC");
 	}
