@@ -1,5 +1,8 @@
 package mbe.common;
 
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonUnwrapped;
+
+import java.io.Serializable;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -12,8 +15,10 @@ import java.util.TreeSet;
  * @author: Jiri Yu
  * @date: 2021/4/9
  */
-public class Biclique {
+public class Biclique implements Serializable {
+    @JsonUnwrapped(prefix = "L")
     private Set<Vertex> leftSet;
+    @JsonUnwrapped(prefix = "R")
     private Set<Vertex> rightSet;
 
     public Biclique(){

@@ -3,13 +3,14 @@ package mbe.algorithm;
 import mbe.common.Biclique;
 import mbe.common.CustomizedBipartiteGraph;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Created by Jiri Yu on 2021/4/19.
  */
-public abstract class AbstractBC {
+public abstract class AbstractBC implements Serializable {
     protected final CustomizedBipartiteGraph customizedBipartiteGraph;
     protected final Set<Biclique> maximalBicliques;
 

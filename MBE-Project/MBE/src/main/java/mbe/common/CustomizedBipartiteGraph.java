@@ -1,9 +1,11 @@
 package mbe.common;
 
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonUnwrapped;
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.SimpleGraph;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -15,8 +17,10 @@ import java.util.*;
  * @author: Jiri Yu
  * @date: 2021/4/10
  */
-public class CustomizedBipartiteGraph {
+public class CustomizedBipartiteGraph implements Serializable {
+    @JsonUnwrapped(prefix = "L")
     private final Set<Vertex> verticesL;
+    @JsonUnwrapped(prefix = "R")
     private final Set<Vertex> verticesR;
 
     private Graph<Vertex, Edge> graph;
@@ -69,7 +73,7 @@ public class CustomizedBipartiteGraph {
     }
 
     public boolean insertVertex(Vertex vertex) {
-        if (vertex.getPartition() == Partition.LEFT) {
+        if (vertex.getPartition().equals(Partition.LEFT)) {
             verticesL.add(vertex);
         } else {
             verticesR.add(vertex);

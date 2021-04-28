@@ -18,16 +18,25 @@
 
 package mbe;
 
+import mbe.algorithm.DynamicBC;
+import mbe.algorithm.MineLMBC;
+import mbe.common.Biclique;
 import mbe.common.CustomizedBipartiteGraph;
 import mbe.common.Edge;
 import mbe.common.Vertex;
+import mbe.process.SyncProcessBase;
 import mbe.source.CustomizedTextInputFormat;
 import mbe.utils.SerializableUtils;
+import org.apache.flink.api.common.RuntimeExecutionMode;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
+import org.apache.flink.streaming.api.windowing.time.Time;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @ClassName: DynamicBC
@@ -39,21 +48,9 @@ public class MBE {
 		// localhost:8081
 		// it needs local environment, that is why we include flink-dist.
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
-
-//		DataStream<Transaction> transactions = env
-//			.addSource(new TransactionSource())
-//			.name("new edges added : (v, v)");
-
-//		DataStream<Alert> alerts = transactions
-//			.keyBy(Transaction::getAccountId)
-//			.process(new DynamicBC())
-//			.name("Dynamic BC - output BC");
-
-//		alerts
-//				.addSink(new AlertSink())
-//				.name("send-alerts");
-//
-//		env.execute("Dynamic BC");
+		// Because the source is bounded, we choose BATCH mode will get a better performance.
+		env.setRuntimeMode(RuntimeExecutionMode.BATCH);
+		env.setParallelism(1);
 
 		// Step 1, create Graph and insert vertices.
 		CustomizedBipartiteGraph customizedBipartiteGraph = new CustomizedBipartiteGraph();
@@ -61,10 +58,21 @@ public class MBE {
 		List<Vertex> verticesR = SerializableUtils.deserializePojos("case1Vertices100R.csv", Vertex.class);
 		customizedBipartiteGraph.insertAllVertices(verticesL);
 		customizedBipartiteGraph.insertAllVertices(verticesR);
+		assert customizedBipartiteGraph.getVerticesL().size() == verticesL.size() : "Wrong vertices' size";
+		assert customizedBipartiteGraph.getVerticesR().size() == verticesR.size() : "Wrong vertices' size";
 
-		// Step, create source node, import edge from deserialization
-		DataStream<Edge> source = env.readFile(new CustomizedTextInputFormat(), SerializableUtils.directory+"case1Edges100.csv");
-		source.print();
+		// Step2, create source node, import edge from deserialization
+		DataStream<Edge> source = env.readFile(new CustomizedTextInputFormat(), SerializableUtils.directory + "case1Edges100.csv");
+
+		// Step3, process DynmaicBC
+		DataStream<Integer> sink = source
+				.map(new SyncProcessBase(customizedBipartiteGraph, MineLMBC.class));
+//				.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
+//				.sum()
+
+		// Step4, output biclques/or Size
+		sink.print();
+
 
 		env.execute("Dynamic BC");
 	}

@@ -1,5 +1,7 @@
 package mbe.common;
 
+import java.io.Serializable;
+
 /**
  * @description: data structure for vertex in bipartite graph
  * 
@@ -7,7 +9,7 @@ package mbe.common;
  * @author: Jiri Yu
  * @date: 2021/4/12 
  */
-public class Vertex implements Comparable<Vertex>{
+public class Vertex implements Comparable<Vertex>, Serializable {
     private final Long id;
     private final String value;
     private final String partition;

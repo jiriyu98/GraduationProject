@@ -34,8 +34,11 @@ public class DynamicBC extends AbstractDynamicBC {
         this.gammaNewBC = new HashSet<>();
         this.gammaDelBC = new HashSet<>();
 
-        this.H = H;
-        this.BC = BC;
+        this.H = new HashSet<>();
+        this.H.addAll(H);
+
+        this.BC = new HashSet<>();
+        this.BC.addAll(BC);
 
         this.staticBCClass = staticBCClass;
     }
@@ -52,6 +55,9 @@ public class DynamicBC extends AbstractDynamicBC {
     public Set<Biclique> getBicliques() {
         calculateNewBC();
         calculateSubBC();
+
+        // BC + NewBC - DelBC -> BC
+        maximalBicliques.addAll(BC);
         maximalBicliques.addAll(gammaNewBC);
         maximalBicliques.removeAll(gammaDelBC);
         return maximalBicliques;

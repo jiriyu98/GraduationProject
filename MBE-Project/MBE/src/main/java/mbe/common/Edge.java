@@ -2,6 +2,8 @@ package mbe.common;
 
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonUnwrapped;
 
+import java.io.Serializable;
+
 /**
  * @description: data structure for edge in bipartite graph
  *
@@ -9,7 +11,7 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonUnw
  * @author: Jiri Yu
  * @date: 2021/4/4 
  */
-public class Edge {
+public class Edge implements Serializable {
     @JsonUnwrapped(prefix = "L")
     private final Vertex left;
     @JsonUnwrapped(prefix = "R")
