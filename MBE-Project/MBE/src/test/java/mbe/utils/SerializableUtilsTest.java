@@ -3,7 +3,6 @@ package mbe.utils;
 import mbe.common.Edge;
 import mbe.common.Partition;
 import mbe.common.Vertex;
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -15,7 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Jiri Yu on 2021/4/23.

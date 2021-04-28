@@ -18,25 +18,20 @@
 
 package mbe;
 
-import mbe.algorithm.DynamicBC;
 import mbe.algorithm.MineLMBC;
-import mbe.common.Biclique;
 import mbe.common.CustomizedBipartiteGraph;
 import mbe.common.Edge;
 import mbe.common.Vertex;
-import mbe.process.SyncProcessBase;
+import mbe.process.SyncDynamicProcessBase;
+import mbe.process.SyncStaticProcessBase;
 import mbe.source.CustomizedTextInputFormat;
 import mbe.utils.SerializableUtils;
 import org.apache.flink.api.common.RuntimeExecutionMode;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
-import org.apache.flink.streaming.api.windowing.time.Time;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @ClassName: DynamicBC
@@ -52,6 +47,8 @@ public class MBE {
 		env.setRuntimeMode(RuntimeExecutionMode.BATCH);
 		env.setParallelism(1);
 
+		long start = System.currentTimeMillis();
+
 		// Step 1, create Graph and insert vertices.
 		CustomizedBipartiteGraph customizedBipartiteGraph = new CustomizedBipartiteGraph();
 		List<Vertex> verticesL = SerializableUtils.deserializePojos("case1Vertices100L.csv", Vertex.class);
@@ -65,14 +62,19 @@ public class MBE {
 		DataStream<Edge> source = env.readFile(new CustomizedTextInputFormat(), SerializableUtils.directory + "case1Edges100.csv");
 
 		// Step3, process DynmaicBC
-		DataStream<Integer> sink = source
-				.map(new SyncProcessBase(customizedBipartiteGraph, MineLMBC.class));
+		DataStream<Long> costTimeDynamic = source
+				.map(new SyncDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class));
 //				.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
 //				.sum()
 
-		// Step4, output biclques/or Size
-		sink.print();
+		DataStream<Long> costTimeStatic = source
+				.map(new SyncStaticProcessBase(customizedBipartiteGraph));
+//				.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
+//				.sum()
 
+		// Step4, output biclques or Size
+		costTimeDynamic.print("Dynamic");
+		costTimeStatic.print("Static");
 
 		env.execute("Dynamic BC");
 	}

@@ -4,7 +4,6 @@ import mbe.common.CustomizedBipartiteGraph;
 import mbe.common.Partition;
 import mbe.common.Vertex;
 import mbe.utils.RandomGenerate;
-import scala.util.Random;
 
 import java.util.HashSet;
 import java.util.Set;

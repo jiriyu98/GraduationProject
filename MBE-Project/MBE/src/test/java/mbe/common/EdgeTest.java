@@ -2,9 +2,7 @@ package mbe.common;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * Created by Jiri Yu on 2021/4/16.
