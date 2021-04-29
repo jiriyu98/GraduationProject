@@ -19,19 +19,29 @@
 package mbe;
 
 import mbe.algorithm.MineLMBC;
+import mbe.common.Biclique;
 import mbe.common.CustomizedBipartiteGraph;
 import mbe.common.Edge;
 import mbe.common.Vertex;
+import mbe.process.AsyncDynamicProcessBase;
 import mbe.process.SyncDynamicProcessBase;
 import mbe.process.SyncStaticProcessBase;
 import mbe.source.CustomizedTextInputFormat;
 import mbe.utils.SerializableUtils;
 import org.apache.flink.api.common.RuntimeExecutionMode;
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.streaming.api.datastream.AsyncDataStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
+import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.util.Collector;
 
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @ClassName: DynamicBC
@@ -62,19 +72,29 @@ public class MBE {
 		DataStream<Edge> source = env.readFile(new CustomizedTextInputFormat(), SerializableUtils.directory + "case1Edges100.csv");
 
 		// Step3, process DynmaicBC
-		DataStream<Long> costTimeDynamic = source
-				.map(new SyncDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class));
-//				.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
-//				.sum()
 
-		DataStream<Long> costTimeStatic = source
+		// Sync Dynamic
+		DataStream<Long> costTimeSyncDynamic = source
+				.map(new SyncDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class));
+
+		// Sync Static
+		DataStream<Long> costTimeSyncStatic = source
 				.map(new SyncStaticProcessBase(customizedBipartiteGraph));
-//				.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
-//				.sum()
+
+		// Async Dynamic
+		DataStream<Long> costTimeAsyncDynamic = AsyncDataStream.
+				orderedWait(source, new AsyncDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class),
+						10000, TimeUnit.MILLISECONDS, 10)
+				// erase will cause problems, so we must specify the type
+				.flatMap((Set<Biclique> bicliques, Collector<Long> collector) -> collector.collect(1L))
+				.returns(Types.LONG)
+				.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
+				.sum(0);
 
 		// Step4, output biclques or Size
-		costTimeDynamic.print("Dynamic");
-		costTimeStatic.print("Static");
+//		costTimeSyncDynamic.print("Sync Dynamic");
+//		costTimeSyncStatic.print("Sync Static");
+		costTimeAsyncDynamic.print("Async Dynamic");
 
 		env.execute("Dynamic BC");
 	}

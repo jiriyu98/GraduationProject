@@ -205,4 +205,16 @@ public class DynamicBC extends AbstractDynamicBC {
             }
         }
     }
+
+    /*
+     * @description: implement supplier interface
+     *
+     * @param
+     * @return java.util.Set<mbe.common.Biclique>
+     * @author Jiri Yu
+     */
+    @Override
+    public Set<Biclique> get() {
+        return this.getBicliques();
+    }
 }

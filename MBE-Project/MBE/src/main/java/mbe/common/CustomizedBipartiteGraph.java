@@ -42,11 +42,18 @@ public class CustomizedBipartiteGraph implements Serializable {
     }
 
     // copy consturctor
-//    public CustomizedBipartiteGraph(CustomizedBipartiteGraph customizedBipartiteGraph) {
-//        this.verticesL = new HashSet<>(customizedBipartiteGraph.getVerticesL());
-//        this.verticesR = new HashSet<>(customizedBipartiteGraph.getVerticesL());
-//        this.graph = new SimpleGraph(customizedBipartiteGraph.graph);
-//    }
+    public CustomizedBipartiteGraph(CustomizedBipartiteGraph customizedBipartiteGraph) {
+        this.verticesL = new HashSet<>(customizedBipartiteGraph.getVerticesL());
+        this.verticesR = new HashSet<>(customizedBipartiteGraph.getVerticesR());
+        this.graph = new SimpleGraph<>(Edge.class);
+
+        // insert vertices
+        insertAllVertices(this.verticesL);
+        insertAllVertices(this.verticesR);
+
+        // insert edges
+        insertAllEdges(customizedBipartiteGraph.getEdges());
+    }
 
     public Set<Vertex> getVerticesL() {
         return verticesL;

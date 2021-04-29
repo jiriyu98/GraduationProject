@@ -25,7 +25,7 @@ public class SyncStaticProcessBase extends RichMapFunction<Edge, Long> {
     private long costTime;
 
     public SyncStaticProcessBase(CustomizedBipartiteGraph customizedBipartiteGraph){
-        this.customizedBipartiteGraph = customizedBipartiteGraph;
+        this.customizedBipartiteGraph = new CustomizedBipartiteGraph(customizedBipartiteGraph);
         this.costTime = 0;
     }
 

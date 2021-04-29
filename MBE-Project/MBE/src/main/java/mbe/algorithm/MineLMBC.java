@@ -133,4 +133,16 @@ public class MineLMBC extends AbstractStaticBC {
             }
         }
     }
+
+    /*
+     * @description: implement supplier interface
+     *
+     * @param
+     * @return java.util.Set<mbe.common.Biclique>
+     * @author Jiri Yu
+     */
+    @Override
+    public Set<Biclique> get() {
+        return this.getBicliques();
+    }
 }
