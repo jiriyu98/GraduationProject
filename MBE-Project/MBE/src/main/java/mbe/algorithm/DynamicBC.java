@@ -206,6 +206,66 @@ public class DynamicBC extends AbstractDynamicBC {
         }
     }
 
+    public static Set<Biclique> calculateGammaNew(CustomizedBipartiteGraph subGraph,
+                                                  Class<? extends AbstractStaticBC> staticBCClass){
+        AbstractStaticBC StaticBC = null;
+        try {
+            StaticBC = staticBCClass.getConstructor(CustomizedBipartiteGraph.class).newInstance(subGraph);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            e.printStackTrace();
+        } finally {
+            if (StaticBC == null){
+                System.out.println("NPE happened, exit.");
+                System.exit(-1);
+            }
+        }
+
+        return StaticBC.getBicliques();
+    }
+
+    public static Set<Biclique> calculateGammaDel(Set<Biclique> tempGammaNewBC, Edge edge){
+
+        Set<Biclique> SS = new HashSet<>();
+        for (Biclique b : tempGammaNewBC){
+            // Line 3
+            Set<Biclique> S = new HashSet<>();
+            S.add(b);
+
+            // Line 4, edge in H
+            Vertex u = edge.getLeft();
+            Vertex v = edge.getRight();
+            // Line 4, edge in E(b), the property of biclique
+            if(b.containsEdge(edge)){
+                // Line 5
+                Set<Biclique> SPrime = new HashSet<>();
+
+                // Line 6, bPrime means b' in paper
+                for (Biclique bPrime : S){
+                    if (bPrime.containsEdge(edge)){
+                        // We already know left endpoint and right endpoint
+                        // Line 8
+                        if (bPrime.getLeftSet().size() > 1){
+                            Biclique b1 = new Biclique(bPrime);
+                            b1.removeLeftVertex(u);
+                            SPrime.add(b1);
+                        }
+                        if (bPrime.getRightSet().size() > 1){
+                            Biclique b2 = new Biclique(bPrime);
+                            b2.removeRightVertex(v);
+                            SPrime.add(b2);
+                        }
+                    }else{
+                        // Line 11
+                        SPrime.add(bPrime);
+                    }
+                }
+                // Line 14
+                SS.addAll(SPrime);
+            }
+        }
+        return SS;
+    }
+
     /*
      * @description: implement supplier interface
      *

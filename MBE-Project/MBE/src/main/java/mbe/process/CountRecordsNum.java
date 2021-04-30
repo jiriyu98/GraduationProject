@@ -13,7 +13,7 @@ public class CountRecordsNum implements MapFunction<Set<Biclique>, Long> {
 
     @Override
     public Long map(Set<Biclique> bicliques) throws Exception {
-        count += 1;
+        count = bicliques.size();
         return count;
     }
 }

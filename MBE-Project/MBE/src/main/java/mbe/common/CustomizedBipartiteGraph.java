@@ -208,6 +208,36 @@ public class CustomizedBipartiteGraph implements Serializable {
         return getIntersectVerticesSet(gammaX, vertices);
     }
 
+    /*
+     * @description: useful methods for flink
+     *
+     * @param edge
+     * @return mbe.common.CustomizedBipartiteGraph
+     * @author Jiri Yu
+     */
+    public CustomizedBipartiteGraph getSubGraph(Edge edge){
+        Vertex u = edge.getLeft();
+        Vertex v = edge.getRight();
+
+        // Line 5, subgraph of G' induced by (gamma(G', u) U Gamma(G', v))
+        // get vertices L & R
+        Set<Vertex> verticesL = this.getAdjacentVertices(v);
+        Set<Vertex> verticesR = this.getAdjacentVertices(u);
+        CustomizedBipartiteGraph subGraph = new CustomizedBipartiteGraph(verticesL, verticesR);
+        // get edges
+        // Because it is just a specific method used in DynamicBC, so it isn't in CustomizedBG's methods.
+        Set<Edge> edgeSet = new HashSet<>();
+        for (Vertex vl : verticesL) {
+            for (Vertex vr : verticesR) {
+                if (this.containsEdge(vl, vr)) {
+                    edgeSet.add(new Edge(vl, vr));
+                }
+            }
+        }
+        subGraph.insertAllEdges(edgeSet);
+        return subGraph;
+    }
+
     @Override
     public String toString() {
         // Most of the time graph.toString() is confusing.

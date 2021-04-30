@@ -25,7 +25,7 @@ public class SyncDynamicProcessBase extends RichMapFunction<Edge, Set<Biclique>>
 
     public SyncDynamicProcessBase(CustomizedBipartiteGraph customizedBipartiteGraph,
                                   Class<? extends AbstractStaticBC> T){
-        this.customizedBipartiteGraph = new CustomizedBipartiteGraph(customizedBipartiteGraph);
+        this.customizedBipartiteGraph = customizedBipartiteGraph;
         this.T = T;
         this.edgeSet = new HashSet<>();
     }

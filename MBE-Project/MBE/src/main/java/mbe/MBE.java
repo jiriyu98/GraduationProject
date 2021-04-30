@@ -23,10 +23,7 @@ import mbe.common.Biclique;
 import mbe.common.CustomizedBipartiteGraph;
 import mbe.common.Edge;
 import mbe.common.Vertex;
-import mbe.process.AsyncDynamicProcessBase;
-import mbe.process.CountRecordsNum;
-import mbe.process.SyncDynamicProcessBase;
-import mbe.process.SyncStaticProcessBase;
+import mbe.process.*;
 import mbe.source.CustomizedTextInputFormat;
 import mbe.utils.SerializableUtils;
 import org.apache.flink.api.common.RuntimeExecutionMode;
@@ -62,7 +59,7 @@ public class MBE {
 		// Step 1, create Graph and insert vertices.
 		CustomizedBipartiteGraph customizedBipartiteGraph = new CustomizedBipartiteGraph();
 
-		int temp = 3;
+		int temp = 1;
 
 		String fileNameVL = null;
 		String fileNameVR = null;
@@ -101,26 +98,41 @@ public class MBE {
 		// Step3, process DynamicBC
 
 		// Sync Dynamic
-		DataStream<Long> costTimeSyncDynamic = source
+		DataStream<Long> costSyncDynamic = source
 				.map(new SyncDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class))
 				.map(new CountRecordsNum());
 
 		// Sync Static
-		DataStream<Long> costTimeSyncStatic = source
+		DataStream<Long> costSyncStatic = source
 				.map(new SyncStaticProcessBase(customizedBipartiteGraph))
 				.map(new CountRecordsNum());
 
 		// Async Dynamic
-		DataStream<Long> costTimeAsyncDynamic = AsyncDataStream.
+		DataStream<Long> costAsyncDynamic = AsyncDataStream.
 				unorderedWait(source, new AsyncDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class),
 						1000, TimeUnit.MILLISECONDS, 100)
 				// erase will cause problems, so we must specify the type
 				.map(new CountRecordsNum());
 
+		// Multi Threads
+		DataStream<Long> costMultiDynamic = source
+				.map(new SubgraphAdapter(customizedBipartiteGraph))
+				.setParallelism(1)
+				.disableChaining()
+				.map(new MultiDynamicProcessBase())
+				.setParallelism(5)
+				.disableChaining()
+				.map(new SubsumedBicliquesProcess())
+				.setParallelism(1)
+				.disableChaining()
+				.map(new CountRecordsNum())
+				.disableChaining();
+
 		// Step4, output bicliques or Size
-		costTimeSyncDynamic.print("Sync Dynamic");
-		costTimeSyncStatic.print("Sync Static");
-		costTimeAsyncDynamic.print("Async Dynamic");
+//		costSyncDynamic.print("Sync Dynamic");
+//		costSyncStatic.print("Sync Static");
+//		costAsyncDynamic.print("Async Dynamic");
+		costMultiDynamic.print("Multi Dynamic");
 
 		env.execute("Dynamic BC");
 	}

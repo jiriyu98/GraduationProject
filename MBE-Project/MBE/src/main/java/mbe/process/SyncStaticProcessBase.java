@@ -23,7 +23,7 @@ public class SyncStaticProcessBase extends RichMapFunction<Edge, Set<Biclique>> 
     private static Set<Biclique> BC = new HashSet<>();
 
     public SyncStaticProcessBase(CustomizedBipartiteGraph customizedBipartiteGraph){
-        this.customizedBipartiteGraph = new CustomizedBipartiteGraph(customizedBipartiteGraph);
+        this.customizedBipartiteGraph = customizedBipartiteGraph;
     }
 
     @Override
