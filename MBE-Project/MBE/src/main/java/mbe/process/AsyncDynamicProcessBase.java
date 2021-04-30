@@ -28,13 +28,12 @@ public class AsyncDynamicProcessBase extends RichAsyncFunction<Edge, Set<Bicliqu
     private final Class<? extends AbstractStaticBC> T;
 
     private static CompletableFuture<Set<Biclique>> future = null;
-    private static boolean isDone = false;
 
     private Set<Biclique> BC;
 
     public AsyncDynamicProcessBase(CustomizedBipartiteGraph customizedBipartiteGraph,
                                    Class<? extends AbstractStaticBC> T){
-        this.customizedBipartiteGraph = new CustomizedBipartiteGraph(customizedBipartiteGraph);
+        this.customizedBipartiteGraph = customizedBipartiteGraph;
         this.T = T;
         this.BC = new HashSet<>();
     }

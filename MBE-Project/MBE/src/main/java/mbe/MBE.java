@@ -24,12 +24,14 @@ import mbe.common.CustomizedBipartiteGraph;
 import mbe.common.Edge;
 import mbe.common.Vertex;
 import mbe.process.AsyncDynamicProcessBase;
+import mbe.process.CountRecordsNum;
 import mbe.process.SyncDynamicProcessBase;
 import mbe.process.SyncStaticProcessBase;
 import mbe.source.CustomizedTextInputFormat;
 import mbe.utils.SerializableUtils;
 import org.apache.flink.api.common.RuntimeExecutionMode;
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.AsyncDataStream;
@@ -57,43 +59,67 @@ public class MBE {
 		env.setRuntimeMode(RuntimeExecutionMode.BATCH);
 		env.setParallelism(1);
 
-		long start = System.currentTimeMillis();
-
 		// Step 1, create Graph and insert vertices.
 		CustomizedBipartiteGraph customizedBipartiteGraph = new CustomizedBipartiteGraph();
-		List<Vertex> verticesL = SerializableUtils.deserializePojos("case1Vertices100L.csv", Vertex.class);
-		List<Vertex> verticesR = SerializableUtils.deserializePojos("case1Vertices100R.csv", Vertex.class);
+
+		int temp = 3;
+
+		String fileNameVL = null;
+		String fileNameVR = null;
+		String fileNameE = null;
+
+		switch (temp){
+			case 1:
+				fileNameVL = "case1Vertices100L.csv";
+				fileNameVR = "case1Vertices100R.csv";
+				fileNameE = "case1Edges100.csv";
+				break;
+			case 2:
+				fileNameVL = "case2Vertices1000L.csv";
+				fileNameVR = "case2Vertices1000R.csv";
+				fileNameE = "case2Edges1000.csv";
+				break;
+			case 3:
+				fileNameVL = "case3Vertices10000L.csv";
+				fileNameVR = "case3Vertices10000R.csv";
+				fileNameE = "case3Edges10000.csv";
+				break;
+		}
+
+		List<Vertex> verticesL = SerializableUtils.deserializePojos(fileNameVL, Vertex.class);
+		List<Vertex> verticesR = SerializableUtils.deserializePojos(fileNameVR, Vertex.class);
 		customizedBipartiteGraph.insertAllVertices(verticesL);
 		customizedBipartiteGraph.insertAllVertices(verticesR);
 		assert customizedBipartiteGraph.getVerticesL().size() == verticesL.size() : "Wrong vertices' size";
 		assert customizedBipartiteGraph.getVerticesR().size() == verticesR.size() : "Wrong vertices' size";
 
 		// Step2, create source node, import edge from deserialization
-		DataStream<Edge> source = env.readFile(new CustomizedTextInputFormat(), SerializableUtils.directory + "case1Edges100.csv");
+		DataStream<Edge> source = env
+				.readFile(new CustomizedTextInputFormat(), SerializableUtils.directory + fileNameE)
+				.setParallelism(5);
 
-		// Step3, process DynmaicBC
+		// Step3, process DynamicBC
 
 		// Sync Dynamic
 		DataStream<Long> costTimeSyncDynamic = source
-				.map(new SyncDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class));
+				.map(new SyncDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class))
+				.map(new CountRecordsNum());
 
 		// Sync Static
 		DataStream<Long> costTimeSyncStatic = source
-				.map(new SyncStaticProcessBase(customizedBipartiteGraph));
+				.map(new SyncStaticProcessBase(customizedBipartiteGraph))
+				.map(new CountRecordsNum());
 
 		// Async Dynamic
 		DataStream<Long> costTimeAsyncDynamic = AsyncDataStream.
-				orderedWait(source, new AsyncDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class),
-						10000, TimeUnit.MILLISECONDS, 10)
+				unorderedWait(source, new AsyncDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class),
+						1000, TimeUnit.MILLISECONDS, 100)
 				// erase will cause problems, so we must specify the type
-				.flatMap((Set<Biclique> bicliques, Collector<Long> collector) -> collector.collect(1L))
-				.returns(Types.LONG)
-				.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(1)))
-				.sum(0);
+				.map(new CountRecordsNum());
 
-		// Step4, output biclques or Size
-//		costTimeSyncDynamic.print("Sync Dynamic");
-//		costTimeSyncStatic.print("Sync Static");
+		// Step4, output bicliques or Size
+		costTimeSyncDynamic.print("Sync Dynamic");
+		costTimeSyncStatic.print("Sync Static");
 		costTimeAsyncDynamic.print("Async Dynamic");
 
 		env.execute("Dynamic BC");

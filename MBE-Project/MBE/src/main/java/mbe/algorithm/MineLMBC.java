@@ -6,6 +6,7 @@ import mbe.common.Partition;
 import mbe.common.Vertex;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @description: basic algorithm for static graph
@@ -26,6 +27,13 @@ public class MineLMBC extends AbstractStaticBC {
 
     @Override
     public Set<Biclique> getBicliques(){
+        // mock delay
+//        try {
+//            TimeUnit.MILLISECONDS.sleep(100);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+
         maximalBicliques.clear();
         Set<Vertex> X = new HashSet<>();
         Set<Vertex> tailX = new HashSet<>(customizedBipartiteGraph.getVerticesL());

@@ -18,29 +18,23 @@ import java.util.Set;
  * @author: Jiri Yu
  * @date: 2021/4/28 
  */
-public class SyncStaticProcessBase extends RichMapFunction<Edge, Long> {
+public class SyncStaticProcessBase extends RichMapFunction<Edge, Set<Biclique>> {
     private final CustomizedBipartiteGraph customizedBipartiteGraph;
     private static Set<Biclique> BC = new HashSet<>();
 
-    private long costTime;
-
     public SyncStaticProcessBase(CustomizedBipartiteGraph customizedBipartiteGraph){
         this.customizedBipartiteGraph = new CustomizedBipartiteGraph(customizedBipartiteGraph);
-        this.costTime = 0;
     }
 
     @Override
-    public Long map(Edge edge) throws Exception {
+    public Set<Biclique> map(Edge edge) throws Exception {
         // before calculate, we need to add edges into graph.
-        long startTime = System.currentTimeMillis();
         customizedBipartiteGraph.insertEdge(edge);
 
         // then calculate
         AbstractStaticBC mineLMBC = new MineLMBC(customizedBipartiteGraph);
         BC = mineLMBC.getBicliques();
-        long endTime = System.currentTimeMillis();
-        costTime += endTime - startTime;
 
-        return costTime;
+        return BC;
     }
 }
