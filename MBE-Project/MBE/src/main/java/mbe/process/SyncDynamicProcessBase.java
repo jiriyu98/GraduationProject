@@ -11,7 +11,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @Description: 
+ * @Description: sync dynamic version
+ *
  * @ClassName: SyncDynamicProcessBase
  * @author: Jiri Yu
  * @date: 2021/4/8 

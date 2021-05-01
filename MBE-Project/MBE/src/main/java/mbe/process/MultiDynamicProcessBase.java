@@ -6,22 +6,27 @@ import mbe.common.Biclique;
 import mbe.common.CustomizedBipartiteGraph;
 import mbe.common.Edge;
 import org.apache.flink.api.common.functions.RichMapFunction;
-import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.tuple.Tuple3;
 
 import java.util.Set;
 
 /**
- * Created by Jiri Yu on 2021/4/30.
+ * @description: this class can be executed in parallel.
+ * 
+ * @className: MultiDynamicProcessBase
+ * @author: Jiri Yu
+ * @date: 2021/5/2 
  */
-public class MultiDynamicProcessBase extends RichMapFunction<Tuple2<Edge, CustomizedBipartiteGraph>, Tuple2<Set<Biclique>, Set<Biclique>>> {
+public class MultiDynamicProcessBase extends RichMapFunction<Tuple3<Edge, CustomizedBipartiteGraph, Long>,
+        Tuple3<Set<Biclique>, Set<Biclique>, Long>> {
 
     @Override
-    public Tuple2<Set<Biclique>, Set<Biclique>> map(Tuple2<Edge, CustomizedBipartiteGraph> tuple2) throws Exception {
-        Edge edge = tuple2.f0;
-        CustomizedBipartiteGraph subGraph = tuple2.f1;
+    public Tuple3<Set<Biclique>, Set<Biclique>, Long> map(Tuple3<Edge, CustomizedBipartiteGraph, Long> tuple3) throws Exception {
+        Edge edge = tuple3.f0;
+        CustomizedBipartiteGraph subGraph = tuple3.f1;
         Set<Biclique> gammaNew = DynamicBC.calculateGammaNew(subGraph, MineLMBC.class);
         Set<Biclique> gammaDel = DynamicBC.calculateGammaDel(gammaNew, edge);
 
-        return Tuple2.of(gammaNew, gammaDel);
+        return Tuple3.of(gammaNew, gammaDel, tuple3.f2);
     }
 }

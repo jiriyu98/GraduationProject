@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @description: 
+ * @description: sync static version
  * 
  * @className: SyncStaticProcessBase
  * @author: Jiri Yu

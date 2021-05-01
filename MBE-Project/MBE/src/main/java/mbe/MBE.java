@@ -55,6 +55,7 @@ public class MBE {
 		// Because the source is bounded, we choose BATCH mode will get a better performance.
 		env.setRuntimeMode(RuntimeExecutionMode.BATCH);
 		env.setParallelism(1);
+		env.getConfig().setAutoWatermarkInterval(30000);
 
 		// Step 1, create Graph and insert vertices.
 		CustomizedBipartiteGraph customizedBipartiteGraph = new CustomizedBipartiteGraph();
