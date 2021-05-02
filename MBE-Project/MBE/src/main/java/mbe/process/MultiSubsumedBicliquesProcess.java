@@ -10,11 +10,11 @@ import java.util.*;
 /**
  * @description: calculate subsumed bicliques
  *
- * @className: SubsumedBicliquesProcess
+ * @className: MultiSubsumedBicliquesProcess
  * @author: Jiri Yu
  * @date: 2021/4/30
  */
-public class SubsumedBicliquesProcess extends RichMapFunction<Tuple3<Set<Biclique>, Set<Biclique>, Long>, Set<Biclique>> {
+public class MultiSubsumedBicliquesProcess extends RichMapFunction<Tuple3<Set<Biclique>, Set<Biclique>, Long>, Set<Biclique>> {
     private final Map<Long, Set<Biclique>> delBCMaps;
     private final Set<Biclique> BC;
 
@@ -24,7 +24,7 @@ public class SubsumedBicliquesProcess extends RichMapFunction<Tuple3<Set<Bicliqu
     // count a batch to delete HashMap, like a period.
     private long batchCount;
 
-    public SubsumedBicliquesProcess() {
+    public MultiSubsumedBicliquesProcess() {
         this.delBCMaps = new HashMap<>();
         this.BC = new HashSet<>();
         this.boundCount = 0;

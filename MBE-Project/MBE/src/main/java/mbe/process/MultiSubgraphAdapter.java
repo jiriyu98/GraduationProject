@@ -9,17 +9,17 @@ import org.apache.flink.api.java.tuple.Tuple3;
 /**
  * @description: calculate subgraph as a pre-information.
  *
- * @className: SubgraphAdapter
+ * @className: MultiSubgraphAdapter
  * @author: Jiri Yu
  * @date: 2021/5/2
  */
-public class SubgraphAdapter extends RichMapFunction<Edge, Tuple3<Edge, CustomizedBipartiteGraph, Long>> {
+public class MultiSubgraphAdapter extends RichMapFunction<Edge, Tuple3<Edge, CustomizedBipartiteGraph, Long>> {
     private CustomizedBipartiteGraph customizedBipartiteGraph;
 
     private final long boundSize = Constants.boundSize;
     private long count;
 
-    public SubgraphAdapter(CustomizedBipartiteGraph customizedBipartiteGraph) {
+    public MultiSubgraphAdapter(CustomizedBipartiteGraph customizedBipartiteGraph) {
         this.customizedBipartiteGraph = customizedBipartiteGraph;
         // make the start num as zero
         this.count = -1L;

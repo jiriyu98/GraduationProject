@@ -19,7 +19,6 @@
 package mbe;
 
 import mbe.algorithm.MineLMBC;
-import mbe.common.Biclique;
 import mbe.common.CustomizedBipartiteGraph;
 import mbe.common.Edge;
 import mbe.common.Vertex;
@@ -27,19 +26,12 @@ import mbe.process.*;
 import mbe.source.CustomizedTextInputFormat;
 import mbe.utils.SerializableUtils;
 import org.apache.flink.api.common.RuntimeExecutionMode;
-import org.apache.flink.api.common.functions.FlatMapFunction;
-import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.AsyncDataStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
-import org.apache.flink.streaming.api.windowing.time.Time;
-import org.apache.flink.util.Collector;
 
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -117,13 +109,13 @@ public class MBE {
 
 		// Multi Threads
 		DataStream<Long> costMultiDynamic = source
-				.map(new SubgraphAdapter(customizedBipartiteGraph))
+				.map(new MultiSubgraphAdapter(customizedBipartiteGraph))
 				.setParallelism(1)
 				.disableChaining()
 				.map(new MultiDynamicProcessBase())
 				.setParallelism(5)
 				.disableChaining()
-				.map(new SubsumedBicliquesProcess())
+				.map(new MultiSubsumedBicliquesProcess())
 				.setParallelism(1)
 				.disableChaining()
 				.map(new CountRecordsNum())
