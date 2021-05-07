@@ -47,7 +47,7 @@ public class MBE {
 		// Because the source is bounded, we choose BATCH mode will get a better performance.
 		env.setRuntimeMode(RuntimeExecutionMode.BATCH);
 		env.setParallelism(1);
-//		env.getConfig().setAutoWatermarkInterval(30000);
+		env.getConfig().setAutoWatermarkInterval(30000);
 
 		// Step 1, create Graph and insert vertices.
 		CustomizedBipartiteGraph customizedBipartiteGraph = new CustomizedBipartiteGraph();
@@ -91,9 +91,9 @@ public class MBE {
 		// Step3, process DynamicBC
 
 		// Sync Dynamic
-//		DataStream<Long> costSyncDynamic = source
-//				.map(new SyncDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class))
-//				.map(new CountRecordsNum());
+		DataStream<Long> costSyncDynamic = source
+				.map(new SyncDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class))
+				.map(new CountRecordsNum());
 
 		// Sync Static
 //		DataStream<Long> costSyncStatic = source
@@ -101,12 +101,12 @@ public class MBE {
 //				.map(new CountRecordsNum());
 
 		// Async Dynamic
-		DataStream<Long> costAsyncDynamic = AsyncDataStream
-				.unorderedWait(source, new AsyncDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class),
-						100000, TimeUnit.MILLISECONDS, 5)
-				.disableChaining()
-				// erase will cause problems, so we must specify the type
-				.map(new CountRecordsNum());
+//		DataStream<Long> costAsyncDynamic = AsyncDataStream
+//				.orderedWait(source, new AsyncDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class),
+//						100000, TimeUnit.MILLISECONDS, 5)
+//				.disableChaining()
+//				// erase will cause problems, so we must specify the type
+//				.map(new CountRecordsNum());
 
 		// Multi Threads
 //		DataStream<Long> costMultiDynamic = source
