@@ -26,6 +26,7 @@ public class AsyncDynamicProcessBase extends RichAsyncFunction<Edge, Set<Bicliqu
 
     private final CustomizedBipartiteGraph customizedBipartiteGraph;
     private final Class<? extends AbstractStaticBC> T;
+    private final int edgeSetSize = 5;
 
     private static CompletableFuture<Set<Biclique>> future = null;
 
@@ -43,7 +44,6 @@ public class AsyncDynamicProcessBase extends RichAsyncFunction<Edge, Set<Bicliqu
         customizedBipartiteGraph.insertEdge(edge);
 
         if (future == null || future.isDone()){
-            edgeSet.clear();
             edgeSet.add(edge);
 
             future = CompletableFuture.supplyAsync(new DynamicBC(customizedBipartiteGraph, edgeSet, BC, T));
@@ -51,15 +51,17 @@ public class AsyncDynamicProcessBase extends RichAsyncFunction<Edge, Set<Bicliqu
                 BC = new HashSet<>(bicliques);
                 resultFuture.complete(Collections.singleton(bicliques));
             });
+            edgeSet.clear();
             return;
         }
-
-        edgeSet.add(edge);
-        resultFuture.complete(Collections.EMPTY_SET);
+        if (edgeSet.size() <= edgeSetSize){
+            edgeSet.add(edge);
+            resultFuture.complete(Collections.EMPTY_SET);
+        }
     }
 
     @Override
     public void timeout(Edge edge, ResultFuture<Set<Biclique>> resultFuture) throws Exception {
-        System.out.println("Timeout");
+        this.asyncInvoke(edge, resultFuture);
     }
 }

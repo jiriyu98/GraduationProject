@@ -47,12 +47,12 @@ public class MBE {
 		// Because the source is bounded, we choose BATCH mode will get a better performance.
 		env.setRuntimeMode(RuntimeExecutionMode.BATCH);
 		env.setParallelism(1);
-		env.getConfig().setAutoWatermarkInterval(30000);
+//		env.getConfig().setAutoWatermarkInterval(30000);
 
 		// Step 1, create Graph and insert vertices.
 		CustomizedBipartiteGraph customizedBipartiteGraph = new CustomizedBipartiteGraph();
 
-		int temp = 1;
+		int temp = 3;
 
 		String fileNameVL = null;
 		String fileNameVR = null;
@@ -91,41 +91,43 @@ public class MBE {
 		// Step3, process DynamicBC
 
 		// Sync Dynamic
-		DataStream<Long> costSyncDynamic = source
-				.map(new SyncDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class))
-				.map(new CountRecordsNum());
+//		DataStream<Long> costSyncDynamic = source
+//				.map(new SyncDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class))
+//				.map(new CountRecordsNum());
 
 		// Sync Static
-		DataStream<Long> costSyncStatic = source
-				.map(new SyncStaticProcessBase(customizedBipartiteGraph))
-				.map(new CountRecordsNum());
+//		DataStream<Long> costSyncStatic = source
+//				.map(new SyncStaticProcessBase(customizedBipartiteGraph))
+//				.map(new CountRecordsNum());
 
 		// Async Dynamic
-		DataStream<Long> costAsyncDynamic = AsyncDataStream.
-				unorderedWait(source, new AsyncDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class),
-						1000, TimeUnit.MILLISECONDS, 100)
+		DataStream<Long> costAsyncDynamic = AsyncDataStream
+				.unorderedWait(source, new AsyncDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class),
+						100000, TimeUnit.MILLISECONDS, 5)
+				.disableChaining()
 				// erase will cause problems, so we must specify the type
 				.map(new CountRecordsNum());
 
 		// Multi Threads
-		DataStream<Long> costMultiDynamic = source
-				.map(new MultiSubgraphAdapter(customizedBipartiteGraph))
-				.setParallelism(1)
-				.disableChaining()
-				.map(new MultiDynamicProcessBase())
-				.setParallelism(5)
-				.disableChaining()
-				.map(new MultiSubsumedBicliquesProcess())
-				.setParallelism(1)
-				.disableChaining()
-				.map(new CountRecordsNum())
-				.disableChaining();
+//		DataStream<Long> costMultiDynamic = source
+//				.map(new MultiSubgraphAdapter(customizedBipartiteGraph))
+//				.setParallelism(1)
+//				.disableChaining()
+//				.map(new MultiDynamicProcessBase())
+//				.setParallelism(5)
+//				.disableChaining()
+//				.map(new MultiSubsumedBicliquesProcess())
+//				.setParallelism(1)
+//				.disableChaining()
+//				.map(new CountRecordsNum())
+//				.disableChaining();
 
 		// Step4, output bicliques or Size
+//		source.print();
 //		costSyncDynamic.print("Sync Dynamic");
 //		costSyncStatic.print("Sync Static");
 //		costAsyncDynamic.print("Async Dynamic");
-		costMultiDynamic.print("Multi Dynamic");
+//		costMultiDynamic.print("Multi Dynamic");
 
 		env.execute("Dynamic BC");
 	}

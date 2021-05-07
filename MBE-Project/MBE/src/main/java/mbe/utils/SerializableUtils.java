@@ -22,7 +22,7 @@ import java.util.Set;
  * @author: Jiri Yu
  * @date: 2021/4/21
  */
-public class SerializableUtils {
+public class SerializableUtils extends RandomGenerate {
     public static final String directory = "src/main/resources/data/";
     public static final String fileExtension = "csv";
     private static final int filesNum = 4;

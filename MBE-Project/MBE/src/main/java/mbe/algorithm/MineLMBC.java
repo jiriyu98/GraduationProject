@@ -28,11 +28,11 @@ public class MineLMBC extends AbstractStaticBC {
     @Override
     public Set<Biclique> getBicliques(){
         // mock delay
-//        try {
-//            TimeUnit.MILLISECONDS.sleep(100);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            TimeUnit.MILLISECONDS.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         maximalBicliques.clear();
         Set<Vertex> X = new HashSet<>();
