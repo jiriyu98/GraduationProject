@@ -91,9 +91,9 @@ public class MBE {
 		// Step3, process DynamicBC
 
 		// Sync Dynamic
-		DataStream<Long> costSyncDynamic = source
-				.map(new SyncDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class))
-				.map(new CountRecordsNum());
+//		DataStream<Long> costSyncDynamic = source
+//				.map(new SyncDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class))
+//				.map(new CountRecordsNum());
 
 		// Sync Static
 //		DataStream<Long> costSyncStatic = source
@@ -122,12 +122,28 @@ public class MBE {
 //				.map(new CountRecordsNum())
 //				.disableChaining();
 
+		// Async Multi Threads
+		DataStream<Long> costAsyncMultiThreads = AsyncDataStream
+				.orderedWait(source
+				.map(new MultiSubgraphAdapter(customizedBipartiteGraph))
+				.setParallelism(1)
+				.disableChaining(), new AsyncMultiDynamicProcessBase(customizedBipartiteGraph, MineLMBC.class),
+						100000, TimeUnit.MILLISECONDS, 5)
+				.setParallelism(5)
+				.disableChaining()
+				.map(new MultiSubsumedBicliquesProcess())
+				.setParallelism(1)
+				.disableChaining()
+				.map(new CountRecordsNum())
+				.disableChaining();
+
 		// Step4, output bicliques or Size
 //		source.print();
 //		costSyncDynamic.print("Sync Dynamic");
 //		costSyncStatic.print("Sync Static");
 //		costAsyncDynamic.print("Async Dynamic");
 //		costMultiDynamic.print("Multi Dynamic");
+		costAsyncMultiThreads.print("Async Multi");
 
 		env.execute("Dynamic BC");
 	}
