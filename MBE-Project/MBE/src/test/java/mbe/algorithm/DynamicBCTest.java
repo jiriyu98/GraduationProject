@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -40,8 +41,9 @@ public class DynamicBCTest {
         assertEquals(vertexSet.size(), customizedBipartiteGraph.getVertices().size());
     }
 
+    @Ignore
     @Test
-    public void testCalculateBC() {
+    public void testCalculateBC1() {
         // Step 1, preparation
         Set<Set<Biclique>> sets = new HashSet<>();
 
@@ -122,5 +124,86 @@ public class DynamicBCTest {
             // set last newBC
             lastNewBC = newBC;
         }
+    }
+
+    @Test
+    public void testCalculateBC2() {
+        // Step 1, preparation
+        Set<Set<Biclique>> sets = new HashSet<>();
+
+        // Step 2, preparation
+        Set<Biclique> BC = new HashSet<>();
+
+        Edge[] edges = this.createEdges();
+
+        // Step 3, test calculateDelBC method.
+        for (int i=0; i<edges.length; ++i){
+            Set<Edge> edgeSet = new HashSet<>();
+            edgeSet.add(edges[i]);
+            customizedBipartiteGraph.insertAllEdges(edgeSet);
+            DynamicBC dynamicBC = new DynamicBC(customizedBipartiteGraph, edgeSet, BC, MineLMBC.class);
+            AbstractStaticBC staticBC = new MineLMBC(customizedBipartiteGraph);
+
+            Set<Biclique> expectedBC = staticBC.getBicliques();
+            Set<Biclique> actualBC = dynamicBC.getBicliques();
+            assertEquals(expectedBC, actualBC);
+
+            System.out.println("newBC:" + soutBC(dynamicBC.getGammaNewBC()));
+            System.out.println("delBC:" + soutBC(dynamicBC.getGammaDelBC()));
+            System.out.println("BC:" + soutBC(dynamicBC.getBicliques()));
+            System.out.println("BCsize:" + dynamicBC.getBicliques().size());
+
+
+            BC.clear();
+            BC.addAll(expectedBC);
+        }
+    }
+
+    private Edge[] createEdges(){
+        int count = 0;
+        Edge[] edges = new Edge[13];
+
+        for (int i = 0; i < numL; i += 2) {
+            Edge edge1 = new Edge(verticesL[i], verticesR[i]);
+            edges[count] = edge1;
+            count += 1;
+            if(i >= 2){
+                Edge edge2 = new Edge(verticesL[i], verticesR[i-2]);
+                edges[count] = edge2;
+                count += 1;
+            }
+            if(i+2 < numR){
+                Edge edge3 = new Edge(verticesL[i], verticesR[i+2]);
+                edges[count] = edge3;
+                count += 1;
+            }
+        }
+        return edges;
+    }
+
+    private String soutBC(Set<Biclique> bicliques){
+        String result = new String();
+        for (Biclique biclique : bicliques){
+            result += "<{";
+            Iterator<Vertex> iterator = biclique.getLeftSet().iterator();
+            while(iterator.hasNext()){
+                Vertex vertex = iterator.next();
+                result += vertex.getId() + vertex.getPartition();
+                if (iterator.hasNext()){
+                    result += ",";
+                }
+            }
+            result += "},{";
+            iterator = biclique.getRightSet().iterator();
+            while(iterator.hasNext()){
+                Vertex vertex = iterator.next();
+                result += vertex.getId() + vertex.getPartition();
+                if (iterator.hasNext()){
+                    result += ",";
+                }
+            }
+            result += "}>";
+        }
+        return result;
     }
 }
