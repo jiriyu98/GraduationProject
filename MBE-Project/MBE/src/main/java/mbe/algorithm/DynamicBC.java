@@ -63,7 +63,7 @@ public class DynamicBC extends AbstractDynamicBC {
         return maximalBicliques;
     }
 
-    /*
+    /**
      * @description: calculate new maximal bicliques in G', and the output is stored in gammaNewBC.
      *
      * @param

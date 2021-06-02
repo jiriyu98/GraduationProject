@@ -43,7 +43,7 @@ public class MineLMBC extends AbstractStaticBC {
         return maximalBicliques;
     }
 
-    /*
+    /**
      * @description: mineLMBC, an algorithm for static bipartite graph.
      *
      * @param X, is a vertex set
