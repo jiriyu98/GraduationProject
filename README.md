@@ -1,6 +1,6 @@
-# Thesis Project by Jingyi (Jiri) Yu
+# Introduction
 
-Hi there, it is my undergraduate thesis project which is about algorithm in dynamic graph.
+Hi there, this is my undergraduate thesis project which is about algorithm in dynamic graph.
 
 ## **_2 June, 2021_**
 
